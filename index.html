@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planetary AI</title>
+<style>
+  body{margin:0;font-family:system-ui,sans-serif;background:#0f1115;color:#e9e9ea}
+  main{max-width:1100px;margin:0 auto;padding:24px}
+  h1,h2{font-weight:600}
+  p{opacity:.9;line-height:1.6}
+  hr{border:none;border-top:1px solid #2a2f3a;margin:24px 0}
+  .btn{border:1px solid #2a2f3a;background:#151823;color:#e9e9ea;padding:8px 10px;border-radius:10px;cursor:pointer}
+  .btn[aria-pressed="true"]{outline:2px solid #8ab4ff}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input[type=range]{width:220px}
+  .viewer{width: 500px;height: 500px;border:1px solid #2a2f3a;border-radius:14px;background:#151823;padding:10px;margin-top:14px;}
+  .stage{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+  .stage img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  border-radius:10px;
+}  
+
+  .caption{margin-top:10px;font-size:13px;opacity:.85}
+  .pill{display:inline-block;padding:2px 8px;border:1px solid #2a2f3a;border-radius:999px;font-size:12px;opacity:.85}
+  .tags{padding-left:18px;margin:10px 0 0}
+  .tag{margin:4px 0}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=range]{width:220px;max-width:100%}
+
+/* Responsive square viewer */
+.viewer{
+  width:min(500px, 100%);
+  aspect-ratio:1/1;
+  border:1px solid #2a2f3a;border-radius:14px;
+  background:#151823;
+  padding:10px;
+  margin-top:14px;
+  box-sizing:border-box;
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px){
+  main{padding:16px}
+  .controls label{width:100%}
+  input[type=range]{width:100%}
+}
+
+</style>
+</head>
+<body>
+<main>
+  <h1>Planetary AI: Data & Experimentation</h1>
+  <div class="tagBar", style="font-size: smaller; opacity:0.6; color:goldenrod; font-weight:bold">
+    <span class="tag">AI LITERACY</span> &nbsp;|
+    <span class="tag">LUNAR SCIENCE</span> &nbsp;|
+    <span class="tag">GEOCHEMISTRY</span> &nbsp;|
+    <span class="tag">MULTIMODAL REPRESENTATION LEARNING</span> &nbsp;|
+    <span class="tag">EXPLAINABLE AI</span>
+  </div>
+  <p>
+    This webpage integrates a virtual gallery of lunar petrography, an experimental AI chatbot, and an AI literacy curriculum as a multimodal testbed, aiming to use petrographic and geochemical data to explore how AI supports lunar science, museums and mineral galleries, youth engagement, and public understanding.
+  </p>
+  
+  <hr>
+
+  <h2>Virtual Gallery</h2>
+
+  <p style="font-size:smaller; opacity:0.5">Images were obtained from Virtual Microscope and subsequently aligned using Python.</p>
+  <br>
+  <div class="controls">
+    <button id="pplBtn" class="btn" aria-pressed="true" type="button">PPL</button>
+    <button id="xplBtn" class="btn" aria-pressed="false" type="button">XPL</button>
+
+    
+
+    <label>
+      Sample
+      <select id="sampleSel" class="btn" style="padding:8px 10px">
+        <option value="15105_r1">15105_r1</option>
+        <option value="15535_r1">15535_r1</option>
+      </select>
+    </label>
+
+<label>
+      Angle
+      <input id="angle" type="range" min="0" max="350" step="10" value="0">
+      <span id="angleVal" class="pill">0°</span>
+    </label>
+  </div>
+
+  <div class="viewer">
+    <div class="stage">
+      <img id="mainImg" alt="Thin section view">
+    </div>
+    <div class="caption" id="caption"></div>
+  </div>
+</main>
+
+<script>
+/*
+Thin-section viewer (index-based filenames)
+
+Expected folder structure:
+  index.html
+  images/
+    15105_r1_ppl001.jpg
+    15105_r1_xpl001.jpg
+    15105_r1_ppl002.jpg
+    15105_r1_xpl002.jpg
+    ...
+
+Mapping:
+  angle (0,10,20,...) -> index = (angle/10)+1
+  0°  -> 001
+  10° -> 002
+  20° -> 003
+*/
+
+// ---- multi-sample configuration ----
+// Folder layout:
+//   index.html
+//   15505/images/<ppl/xpl frames>
+//   15535/images/<ppl/xpl frames>
+//
+// Expected filenames (same as before, just inside each sample folder):
+//   <BASE>_<ppl|xpl><index3>.<EXT>
+// Example:
+//   15505/images/15505_ppl001.jpg
+//   15505/images/15505_xpl001.jpg
+const SAMPLES = [
+  { id: "15105_r1", base: "15105_r1", imgDir: "15105_r1", ext: "jpg" },
+  { id: "15535_r1", base: "15535_r1", imgDir: "15535_r1", ext: "jpg" },
+];
+
+function getSample(id){
+  return SAMPLES.find(s => s.id === id) || SAMPLES[0];
+}
+let mode = "ppl"; // "ppl" or "xpl"
+
+const mainImg = document.getElementById("mainImg");
+const caption = document.getElementById("caption");
+const pplBtn = document.getElementById("pplBtn");
+const xplBtn = document.getElementById("xplBtn");
+const angle = document.getElementById("angle");
+const angleVal = document.getElementById("angleVal");
+const sampleSel = document.getElementById("sampleSel");
+function pad3(n){ return String(n).padStart(3, "0"); }
+
+function render(){
+  const deg = Number(angle.value);
+  const idx = Math.round(deg / 10) + 1; // 0°->1, 10°->2, 20°->3...
+  const sample = getSample(sampleSel?.value);
+  const file = `${sample.base}_${mode}${pad3(idx)}.${sample.ext}`;
+  const src = `${sample.imgDir}/${file}`;
+
+  mainImg.onerror = () => {
+    caption.textContent = `❌ Image not found: ${src}`;
+  };
+
+  mainImg.src = src;
+
+  pplBtn.setAttribute("aria-pressed", mode === "ppl");
+  xplBtn.setAttribute("aria-pressed", mode === "xpl");
+
+  angleVal.textContent = `${deg}°`;
+  caption.textContent = `${getSample(sampleSel?.value).id} · ${mode.toUpperCase()} · ${deg}°`;
+}
+
+pplBtn.onclick = () => { mode = "ppl"; render(); };
+xplBtn.onclick = () => { mode = "xpl"; render(); };
+angle.oninput = render;
+sampleSel.onchange = () => { angle.value = 0; render(); };
+
+render();
+</script>
+</body>
+</html>

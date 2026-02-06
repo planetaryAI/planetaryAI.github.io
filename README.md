@@ -1,1 +1,1 @@
-[https://planetaryai.github.io/](https://planetaryai.github.io/){:target="_blank"}
+[planetaryai.github.io/](https://planetaryai.github.io/){:target="_blank"}

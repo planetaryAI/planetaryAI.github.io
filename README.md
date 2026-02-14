@@ -1,6 +1,6 @@
 [planetaryAI.github.io](https://planetaryai.github.io)
 ## Planetary AI Webinar Series
-### Lunar Petrographic (2/28/2026)
+### Lunar Petrographic (2/28/2026 7pm Eastern)
 
 Webinar on lunar petrography: We will examine petrographic thin-section micrographs, with a focus on olivine mineralogy and textures in lunar samples.
 

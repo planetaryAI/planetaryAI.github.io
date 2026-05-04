@@ -12,4 +12,4 @@
 9. <strong>Converting PDFs to Markdown Files (3)</strong>: 4/18/2026
 10. <strong>Petrographic Images in Lunar Thin Sections</strong>: 4/25/2026<br> Register here: [https://us06web.zoom.us/meeting/register/Hg3p2xB0QZK6jjmN_21idw](https://us06web.zoom.us/meeting/register/Hg3p2xB0QZK6jjmN_21idw)
 11. <strong>Reading the Moon (1)</strong>: 5/2/2026<br> Register here: [https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ](https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ)
-12. <strong>Reading the Moon (2)</strong>: 5/9/2026<br> Register here: [https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA]([https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ](https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA))
+12. <strong>Reading the Moon (2)</strong>: 5/9/2026<br> Register here: [https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA]([https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ](https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA)

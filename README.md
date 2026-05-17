@@ -14,3 +14,4 @@
 11. <strong>Reading the Moon (1)</strong>: 5/2/2026<br> Register here: [https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ](https://us06web.zoom.us/meeting/register/3NA9nldTStOO1vNdPSnzvQ)
 12. <strong>Reading the Moon (2)</strong>: 5/9/2026<br> Register here: [https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA](https://us06web.zoom.us/meeting/register/XAIMPeLeRgCsUbMbTw1UgA)
 13. <strong>Reading the Moon (3)</strong>: 5/16/2026<br> Register here: [https://us06web.zoom.us/meeting/register/--1t0XYBSVSji-Y3PPAH4Q](https://us06web.zoom.us/meeting/register/--1t0XYBSVSji-Y3PPAH4Q)
+14. <strong>How AI helps me understand a recently published article on Davemaoite</strong>

@@ -4,72 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Planetary AI</title>
-<style>
-  body{margin:0;font-family:system-ui,sans-serif;background:#0f1115;color:#e9e9ea}
-  main{max-width:1100px;margin:0 auto;padding:24px}
-  h1,h2{font-weight:600}
-  p{opacity:.9;line-height:1.6}
-  hr{border:none;border-top:1px solid #2a2f3a;margin:24px 0}
-  .btn{border:1px solid #2a2f3a;background:#151823;color:#e9e9ea;padding:8px 10px;border-radius:10px;cursor:pointer}
-  .btn[aria-pressed="true"]{outline:2px solid #8ab4ff}
-  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  input[type=range]{width:220px}
-  .viewer{width: 500px;height: 500px;border:1px solid #2a2f3a;border-radius:14px;background:#151823;padding:10px;margin-top:14px;}
-  .stage{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-  .stage img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-  border-radius:10px;
-}  
+<link rel="stylesheet" href="css/style.css">
 
-  .caption{margin-top:10px;font-size:13px;opacity:.85}
-  .pill{display:inline-block;padding:2px 8px;border:1px solid #2a2f3a;border-radius:999px;font-size:12px;opacity:.85}
-  .tags{padding-left:18px;margin:10px 0 0}
-  .tag{margin:4px 0}
-
-  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-input[type=range]{width:220px;max-width:100%}
-
-/* Responsive square viewer */
-.viewer{
-  width:min(500px, 100%);
-  aspect-ratio:1/1;
-  border:1px solid #2a2f3a;border-radius:14px;
-  background:#151823;
-  padding:10px;
-  margin-top:14px;
-  box-sizing:border-box;
-}
-
-/* Mobile tweaks */
-@media (max-width: 640px){
-  main{padding:16px}
-  .controls label{width:100%}
-  input[type=range]{width:100%}
-}
-
-</style>
 </head>
+
 <body>
 <main>
-  <h1>Planetary AI</h1>
-  <div class="tagBar", style="font-size: smaller; opacity:0.6; color:goldenrod; font-weight:bold">
-    <span class="tag">AI LITERACY</span> &nbsp;|
-    <span class="tag">LUNAR SCIENCE</span> &nbsp;|
-    <span class="tag">GEOCHEMISTRY</span> &nbsp;|
-    <span class="tag">MULTIMODAL REPRESENTATION LEARNING</span>
-   
-  </div>
-  <p>
-    This webpage integrates a virtual gallery of lunar petrography, an experimental AI chatbot, and an AI literacy curriculum as a multimodal testbed, aiming to use diverse scientific data to explore how AI supports lunar science, museums and mineral galleries, youth engagement, and public understanding.
-  </p>
+  <header class="siteHeader">
+    <a class="brand" href="/">
+      Planetary AI
+    </a>
+
+
+
+    <p class="pageDescription">
+      This webpage integrates a virtual gallery of lunar petrography, an experimental AI chatbot, and an AI literacy curriculum, aiming to draw upon diverse scientific data and years of work mentoring youth through hands-on experiences in ICP-MS water geochemistry labs, geological fieldwork, and experimental petrology to critically examine the opportunities and limitations of AI in advancing science, enriching museums and galleries, fostering youth intellectual growth, and enhancing public understanding of science.
+    </p>
+
+  </header>
+
   
   <hr>
 
@@ -119,9 +72,8 @@ input[type=range]{width:220px;max-width:100%}
   <!-- Planetary AI Curriculum -->
   <hr>
   <hr>
-  <h2>Planetary AI Curriculum</h2>
-  <p style="font-size:small">Youth participating in this paid Planetary AI curriculum will dive into returned lunar samples with lunar images and datasets, and explore how multimodal AI is advancing lunar science. We'll critically examine the role and limitations of AI and work toward building a systematic knowledge system for lunar sample research through systematic extraction of core ideas, causal analysis and relations, and quantitative data from the Apollo-era PDFs and archives, including texts, images, figures, and numeric tables.</p>
-  <p style="font-size:smaller; opacity:0.5">The AI literacy curriculum is informed by our previous public webinars and the work presented below:</p>
+  <h2>AI Literacy Curriculum</h2>
+  <p style="font-size:small">Youth participating in this paid AI Literacy curriculum will critically examine the role and limitations of AI. The AI literacy curriculum is informed by our previous public webinars, years of hands-on scientific experiences, and the work presented below:</p>
   <ul style="font-size:smaller; opacity:0.85; line-height:1.6; margin-top:8px;">
     <li>O. Tschauner, S. Huang, J. Hardin, M. Petaev, L. Magad-Weiss, E. Tschauner, M. White, A. Salamat, N. Dygert, and P. Wang, "Synthesis of K- and Fe-rich davemaoite", American Mineralogist, 2026. doi: https://doi.org/10.2138/am-2026-10284</li>
     <li>P. Wang, D. Pelaia, Z. Zou, S. Xiao, A. He, N. He, F. Zhu, N. Mao, J. Wu, J. Wu, C. Neal, and S. Huang," OCR-Enabled Dataset Assembly for Machine Learning in Olivine Geochemistry," ESS Open Archive, December 24, 2025. DOI: 10.22541/essoar.176659907.72242256/v1</li>
@@ -156,19 +108,18 @@ input[type=range]{width:220px;max-width:100%}
     Nathan H."
   </blockquote>
   <hr>
-  <p style="font-size:small">We wanted to thank Dr. Brian Duggan (UTK), Dr. Stein Jacobsen (Harvard Univ), Dr. Hairuo Fu (Brown Univ), Dr. Nick Dygert (UTK), Dr. Justin Simon (Johnson Space Center), Dr. Jian Wu (ODU), Dr. Shane Byrne (U.Arizona), Dr. Clive Neal (Notre Dame), Troy Harris (now studying at Stanford), Anya Zhang (studying at Stanford), Alice Zou (now studying at Catech), and Nathan He (who will be studying at Princeton). Particularly, we wanted to thank Dominick Pelaia, a high school student at L&M STEM Academy, Knoxville, TN, who has been working on creating AI chatbots for natural hazards. Dominick has contributed a lot to our curriculum! Nathan Mao, a high school student at the Harker School, San Jose, attended our public webinar sereis and started working on developing classification and segmentation methods for lunar thin section imagery. Two other high school students in the Cambridge area are also working on it, too!</p>
+  <p style="font-size:small">We wanted to thank Dr. Stein Jacobsen (Harvard Univ), Dr. Hairuo Fu (Brown Univ), Dr. Nick Dygert (UTK), Dr. Justin Simon (Johnson Space Center), Dr. Jian Wu (ODU), Dr. Shane Byrne (U.Arizona), Dr. Clive Neal (Notre Dame), Jinqi Wu (PhD student at Harvard), Troy Harris (now studying at Stanford), Anya Zhang (studying at Stanford), Alice Zou (now studying at Catech), Dominick Pelaia (L&M Academy), Nathan Mao (Harker School), and Nathan He (who will be studying at Princeton). Particularly, we wanted to thank Dominick Pelaia, a high school student at L&M STEM Academy, Knoxville, TN, who has been working on creating AI chatbots for natural hazards. Dominick has contributed a lot to our curriculum!</p>
   
   <hr>
-  <h2>AI-enabled Kiosk Chatbots & Interactive Exhibits</h2>
-  <p style="font-size:small">We invite museums / mineral galleries to collaborate on developing and deploying kiosk chatbots and interactive exhibits as platforms for planetary science research, planetary explorations, and public engagement.</p>
+  <h2>AI-enabled Exhibits</h2>
+  <p style="font-size:small">We invite museums and galleries to collaborate on developing and deploying kiosk chatbots and interactive exhibits as platforms for planetary science research, planetary explorations, and public engagement.</p>
   <hr>
-  <h2>Petrographic & Geochemical Datasets</h2>
-  <p style="font-size:small">We invite AI researchers to collaborate on planetary science/exploration-focused multimodal learning and human–AI interaction in public scientific contexts. Collaborations can involve model development, interface design, interpretability studies, or comparative experiments using the planetary datasets and museum deployment.</p>
+ 
+  <p style="font-size:small">We invite AI researchers to collaborate on planetary science/exploration-focused multimodal learning and human–AI interaction in public scientific contexts. Collaborations can involve model development, interface design, interpretability studies, or comparative experiments using the planetary datasets and museum deployment. We are currently working on developing the Structured Lunar Knowledge Infrastructure that underpins the development of a foundation model of the Moon through systematically extracting core ideas, causal analysis and relations, and quantitative data in corpus of PDFs on studies of returned lunar samples.</p>
+
   <hr>
-  <h2>Structured Lunar Knowledge Infrastructure</h2>
-  <p style="font-size:small">We are currently working on developing the Structured Lunar Knowledge Infrastructure based that underpins the development of a foundation model of the Moon through systematically extracting core ideas, causal analysis and relations, and quantitative data in corpus of PDFs on studies of returned lunar samples</p>
   <h2>Acknowledgement</h2>
-  <p style="font-size:small">This work is developed by PI Ping Wang who is a Research Scientist at Planetary Science Institute, and is supported by the National Science Foundation under Grant No. DRL-2620566. Any opinions, findings, and conclusions or recommendations expressed are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
+  <p style="font-size:small">This work is developed by PI Ping Wang who is a Research Scientist at the Planetary Science Institute. This work is supported by the National Science Foundation under Grant No. DRL-2620566. Any opinions, findings, and conclusions or recommendations expressed are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
   <hr>
   <h2>Contact</h2>
   <p>pwang@psi.edu</p>

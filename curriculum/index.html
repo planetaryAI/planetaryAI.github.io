@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Literacy Curriculum</title>
+<link rel="stylesheet" href="../css/style.css">
+
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  
+  
+  <style>
+    
+
+
+    #newsletter-list{list-style-type:disc; padding-left:12px; }
+    
+    #newsletter-list li{margin-bottom:6px;}
+    .newsletter-link {
+      
+      font-size: small;
+      color:#D8BB6A;
+      text-decoration: none;
+    }
+
+    .newsletter-link:hover {
+      color: #D8BB6A;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+
+<body>
+<main>
+  <header class="siteHeader">
+    <a class="brand" href="/">AI Literacy Curriculum</a>
+
+    <nav class="nav">
+
+      <a href="../index.html">Home</a>
+      
+
+      
+
+    </nav>
+
+    <p class="pageDescription">
+      This webpage is about the AI Literacy Curriculum.
+    </p>
+
+  </header>
+
+  <hr>
+  <h3>AI Literacy Built on Lunar Thin Sections</h3>
+
+  <ul id="newsletter-list"></ul>
+
+
+  <script>
+    async function loadNewsletters() {
+    const container = document.getElementById("newsletter-list");
+
+    const response = await fetch("newsletters.json");
+    const newsletters = await response.json();
+
+    container.innerHTML = "";
+
+    newsletters.forEach(item => {
+        const li = document.createElement("li");
+
+        const link = document.createElement("a");
+        link.className = "newsletter-link";
+        link.href = item.file;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = item.title;
+
+        li.appendChild(link);
+        container.appendChild(li);
+    });
+}
+
+loadNewsletters();
+  </script>
+
+<br>
+<br>
+<hr>
+  <h2>Acknowledgement</h2>
+  <p style="font-size:small">This work is developed by PI Ping Wang who is a Research Scientist at the Planetary Science Institute. This work is supported by the National Science Foundation under Grant No. DRL-2620566. Any opinions, findings, and conclusions or recommendations expressed are those of the authors and do not necessarily reflect the views of the National Science Foundation.</p>
+  <hr>
+  <h2>Contact</h2>
+  <p>pwang@psi.edu</p>
+
+</main>
+
+</body>
+</html>

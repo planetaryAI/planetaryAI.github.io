@@ -16,3 +16,4 @@
 13. <strong>Reading the Moon (3)</strong>: 5/16/2026<br> Register here: [https://us06web.zoom.us/meeting/register/--1t0XYBSVSji-Y3PPAH4Q](https://us06web.zoom.us/meeting/register/--1t0XYBSVSji-Y3PPAH4Q)
 14. <strong>How AI helps me understand a recently published article on Davemaoite (1)</strong>: 5/23/2026
 15. <strong>How AI helps me understand a recently published article on Davemaoite (2)</strong>: 5/30/2026
+16. <strong>Lunar Thin Sections(1)</strong>: 6/13/2026

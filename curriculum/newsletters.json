@@ -2,6 +2,10 @@
   {
     "title": "An AI Literacy Curriculum Framework",
     "file": "pdfs/framework.pdf"
+  },
+  {
+    "title": "LLM APIs",
+    "file": "pdfs/api.pdf"
   }
   
 ]

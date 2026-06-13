@@ -6,6 +6,9 @@
   {
     "title": "LLM APIs",
     "file": "pdfs/api.pdf"
-  }
-  
+  },
+  {
+    "title": "Guide to Thin Section Microscopy",
+    "file": "pdfs/thin_section.pdf"
+  },
 ]

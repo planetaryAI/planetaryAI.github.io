@@ -17,3 +17,5 @@
 14. <strong>How AI helps me understand a recently published article on Davemaoite (1)</strong>: 5/23/2026
 15. <strong>How AI helps me understand a recently published article on Davemaoite (2)</strong>: 5/30/2026
 16. <strong>Lunar Thin Sections(1)</strong>: 6/13/2026
+17. <strong>Lunar Thin Sections(2)</strong>: 6/20/2026
+18. <strong>Lunar Thin Sections(3)</strong>: 6/27/2026

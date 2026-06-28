@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    /* microscope field of view, near-black with a blue cast */
+    --field:#08080d;
+    --field-2:#0e0e16;
+    --panel:#13131e;
+    --panel-2:#1a1a28;
+    --line:#262636;
+    --line-bright:#37374d;
+    /* regolith / highland anorthosite greys for text */
+    --regolith:#cdc9c0;
+    --muted:#8b8b9e;
+    --faint:#5f5f72;
+    /* Michel-Lévy birefringence accents */
+    --biref-blue:#4a7fd4;
+    --biref-magenta:#c8418a;
+    --biref-gold:#e0b341;
+    --biref-green:#6fb97d;
+    --ink:#f3f2ee;
+    --radius:14px;
+    --mono:sans-serif;
+    --disp:sans-serif;
+    --body:sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 78% -8%, #16162a 0%, transparent 55%),
+      radial-gradient(900px 600px at 0% 110%, #121221 0%, transparent 50%),
+      var(--field);
+    color:var(--regolith);
+    font-family:var(--body);
+    font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 80px}
+
+  /* ---------- header ---------- */
+  header{padding:30px 0 18px;border-bottom:1px solid var(--line)}
+  .brandline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .logo{
+    font-family:var(--mono);font-size:11px;letter-spacing:.32em;
+    color:var(--biref-gold);text-transform:uppercase;
+    border:1px solid var(--line-bright);border-radius:999px;
+    padding:5px 12px;white-space:nowrap;
+  }
+  h1{
+    font-family:var(--disp);font-weight:700;color:var(--ink);
+    font-size:clamp(26px,4.4vw,44px);line-height:1.02;letter-spacing:-.02em;
+    margin:14px 0 6px;
+  }
+  .sub{color:var(--muted);max-width:62ch;font-size:15px}
+  .sub b{color:var(--regolith);font-weight:600}
+
+  /* ---------- station nav ---------- */
+  nav{
+    display:flex;gap:6px;margin:22px 0 26px;flex-wrap:wrap;
+    border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px;width:fit-content;
+  }
+  nav button{
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    color:var(--muted);background:transparent;border:0;cursor:pointer;
+    padding:9px 16px;border-radius:999px;transition:.18s;display:flex;gap:9px;align-items:center;
+  }
+  nav button .n{color:var(--faint);font-weight:700}
+  nav button:hover{color:var(--regolith)}
+  nav button.active{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-bright)}
+  nav button.active .n{color:var(--biref-gold)}
+
+  .station{display:none;animation:fade .4s ease}
+  .station.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ---------- generic ---------- */
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--biref-magenta);margin:0 0 10px}
+  h2{font-family:var(--disp);font-weight:600;color:var(--ink);font-size:clamp(20px,3vw,30px);letter-spacing:-.01em;margin:0 0 10px}
+  h3{font-family:var(--disp);font-weight:600;color:var(--ink);font-size:18px;margin:0 0 6px}
+  p{margin:0 0 12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .grid{display:grid;gap:18px}
+  .stage-note{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.04em}
+
+  /* ---------- thin-section viewer ---------- */
+  .scope{position:relative;width:100%;aspect-ratio:1/1;max-width:420px;margin-inline:auto}
+  .scope svg,.scope img,.scope video{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;
+    box-shadow:0 0 0 2px var(--line-bright), 0 0 40px rgba(0,0,0,.6), inset 0 0 60px rgba(0,0,0,.5)}
+  .scope .reticle{position:absolute;inset:0;pointer-events:none}
+  .scope-ph{display:flex;flex-direction:column;justify-content:center;width:100%;aspect-ratio:1/1;max-width:420px;
+    margin-inline:auto;padding:26px;box-sizing:border-box;border-radius:50%;font-family:var(--mono);font-size:12px;
+    line-height:1.7;color:var(--biref-magenta);text-align:center;border:1px dashed var(--line-bright);
+    background:repeating-linear-gradient(45deg,transparent,transparent 9px,rgba(255,255,255,.025) 9px,rgba(255,255,255,.025) 18px)}
+  .scope-ph span{color:var(--faint)}
+  #alscope .scope-ph,#alscope img{border-radius:10px;aspect-ratio:auto}
+  .stage-controls{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+  .stage-controls input[type=range]{flex:1;min-width:140px;accent-color:var(--biref-gold)}
+  .readout{font-family:var(--mono);font-size:12px;color:var(--biref-gold);min-width:62px;text-align:right}
+  .pill-btn{
+    font-family:var(--mono);font-size:12px;letter-spacing:.03em;cursor:pointer;
+    background:var(--panel-2);color:var(--regolith);border:1px solid var(--line-bright);
+    border-radius:999px;padding:8px 14px;transition:.15s;
+  }
+  .pill-btn:hover{border-color:var(--biref-gold);color:var(--ink)}
+  .pill-btn.live{border-color:var(--biref-magenta);color:#ffd9ec}
+  .pill-btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  /* ---------- mineral lab ---------- */
+  .lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:26px;align-items:start}
+  .specimen-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .specimen-tabs button{
+    font-family:var(--mono);font-size:12px;cursor:pointer;border-radius:10px;
+    padding:8px 12px;border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:.15s;
+  }
+  .specimen-tabs button.active{color:var(--ink);border-color:var(--line-bright);background:var(--panel-2)}
+  .specimen-tabs .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:middle}
+  .formula{font-family:var(--mono);color:var(--biref-blue);font-size:13px}
+  .keytable{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px}
+  .keytable td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .keytable td:first-child{color:var(--faint);font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;width:34%;padding-right:14px}
+  .diag{color:var(--biref-gold);font-weight:600}
+  .ctx{margin-top:16px;padding:14px 16px;border-left:2px solid var(--biref-magenta);background:var(--field-2);border-radius:0 10px 10px 0;font-size:13.5px;color:var(--muted)}
+  .ctx b{color:var(--regolith)}
+
+  /* ---------- segmented feature controls ---------- */
+  .feat{margin-bottom:14px}
+  .feat label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .seg button{
+    flex:1;font-family:var(--body);font-size:12.5px;cursor:pointer;padding:9px 6px;
+    background:var(--panel);color:var(--muted);border:0;border-right:1px solid var(--line);transition:.14s;
+  }
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:var(--panel-2);color:var(--ink);box-shadow:inset 0 -2px 0 var(--biref-gold)}
+  .seg button:hover{color:var(--regolith)}
+
+  /* ---------- dataset table ---------- */
+  .ds-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  table.ds{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px;min-width:560px}
+  table.ds th{color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:500;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel)}
+  table.ds td{padding:8px 12px;border-bottom:1px solid var(--field-2);color:var(--regolith)}
+  table.ds tr:hover td{background:var(--field-2)}
+  .lbl-chip{padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700}
+  .row-x{color:var(--faint);cursor:pointer}
+  .row-x:hover{color:var(--biref-magenta)}
+
+  /* ---------- agent / results ---------- */
+  .bar{height:9px;border-radius:999px;background:var(--field-2);overflow:hidden}
+  .bar > i{display:block;height:100%;border-radius:999px;transition:width .5s ease}
+  .conf-row{display:grid;grid-template-columns:130px 1fr 50px;gap:12px;align-items:center;margin-bottom:9px;font-family:var(--mono);font-size:12px}
+  .matrix{border-collapse:collapse;font-family:var(--mono);font-size:11.5px;margin-top:6px}
+  .matrix td,.matrix th{border:1px solid var(--line);padding:8px 10px;text-align:center;min-width:46px}
+  .matrix th{color:var(--faint);font-weight:500}
+  .matrix .diagc{color:var(--biref-green);font-weight:700}
+  .bignum{font-family:var(--disp);font-weight:700;font-size:40px;color:var(--ink);line-height:1}
+  .stat-cap{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em;text-transform:uppercase}
+
+  .nn{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .nn .chip{font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--field-2)}
+
+  textarea{width:100%;background:var(--field-2);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--body);font-size:14px;padding:12px;resize:vertical;min-height:76px}
+  textarea:focus{outline:none;border-color:var(--biref-blue)}
+  .ai-out{margin-top:12px;padding:14px 16px;border-radius:10px;background:var(--field-2);border:1px solid var(--line);font-size:14px;white-space:pre-wrap;color:var(--regolith);min-height:20px}
+  .hint{font-size:12.5px;color:var(--faint)}
+
+  .cta-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .progress-dots{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--line-bright)}
+  .dot.done{background:var(--biref-green)}
+
+  .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+  .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  @media(max-width:860px){
+    .lab,.two{grid-template-columns:1fr}
+    .three{grid-template-columns:1fr}
+  }
+
+  .footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);font-family:var(--mono)}
+  a.link{color:var(--biref-blue);text-decoration:none;border-bottom:1px dotted var(--line-bright)}
+  @media (prefers-reduced-motion:reduce){.station{animation:none}.bar>i{transition:none}}
+  #errbar{display:none;position:fixed;left:0;right:0;top:0;z-index:9999;background:#3a0d18;color:#ffd2dd;
+    font-family:var(--mono);font-size:12px;padding:10px 16px;border-bottom:1px solid #c8418a;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div id="errbar"></div>
+<script>
+  /* surface any script error on-screen so problems are visible, not silent */
+  window.addEventListener('error',function(e){
+    var b=document.getElementById('errbar'); if(!b)return;
+    b.style.display='block';
+    b.textContent='⚠ Script error: '+(e.message||e.error)+(e.lineno?(' (line '+e.lineno+')'):'');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    var b=document.getElementById('errbar'); if(!b)return;
+    b.style.display='block'; b.textContent='⚠ '+(e.reason&&e.reason.message||e.reason);
+  });
+</script>
+
+<div class="wrap">
+  <header>
+    <!--<div class="brandline">
+      <span class="logo">Zero2space Lab · Station 0–3</span>
+      <span class="stage-note">Optical petrography of the Moon × AI</span>
+    </div> -->
+    <h1>Reading the Moon</h1>
+    <p class="sub">An interactive exhibit where you explore and identify the Moon's four major rock-forming minerals under a polarizing microscope, label your own thin-section dataset, contribute to a growing thin section dataset for a foundation model of the Moon, and observe how a self-improving AI agent performing per-grain segmentation in real time.</p>
+  </header>
+
+  <nav id="nav">
+    <button data-go="brief" class="active"><span class="n">00</span> Intro</button>
+    <button data-go="lab"><span class="n">01</span> Mineral Lab</button>
+    <button data-go="data"><span class="n">02</span> Dataset</button>
+    <button data-go="agent"><span class="n">03</span> ML</button>
+    <button data-go="active"><span class="n">04</span> AI agent</button>
+  </nav>
+
+  <!-- ============ STATION 0 : BRIEF ============ -->
+  <section class="station active" id="brief">
+    
+      <div>
+        <p class="eyebrow">Intro</p>
+        <h2>Lunar rocks are simple.</h2>
+        <p>The Moon has no liquid water and no plate tectonics, so its minerals never weathered into clays or micas. A lunar thin section is a clean mosaic of just a handful of primary minerals, formed billions of years ago and frozen in place. That simplicity is exactly what makes the Moon a perfect classroom for petrography — and a perfect training set for a classifier.</p>
+        <p>Two kinds of rock dominate. The bright <b>highlands</b> are <b>anorthosite</b>, almost pure plagioclase feldspar. The dark <b>maria</b> are <b>basalt</b>, built from pyroxene, plagioclase, olivine, and titanium-rich ilmenite. Learn those four and you can read most of the lunar surface.</p>
+        <div class="ctx" style="margin-top:18px">
+           A 30-micron-thick slice of rock is placed between two crossed polarizing filters. Each mineral splits light in its own way, glowing in interference colors. Rotate the stage and grains brighten, shift, and snap to black at extinction. The pattern of relief, cleavage, twinning, and color is a fingerprint.
+        </div>
+      </div>
+      <div class="panel">
+        <p class="eyebrow" style="color:var(--regolith)">Your path through the exhibit</p>
+        <div class="grid">
+          <div><h3><span style="color:var(--biref-gold);font-family:var(--mono)">01 ·</span> Mineral Lab</h3><p style="color:var(--muted);margin:0">Meet the four minerals. Rotate a live thin section and watch each one reach extinction.</p></div>
+          <div><h3><span style="color:var(--biref-gold);font-family:var(--mono)">02 ·</span> Dataset</h3><p style="color:var(--muted);margin:0">Examine unknown specimens, record what you observe, and assign a label. You are building a training set.</p></div>
+          <div><h3><span style="color:var(--biref-gold);font-family:var(--mono)">03 ·</span> ML</h3><p style="color:var(--muted);margin:0">Turn your labels into a k-nearest-neighbor classifier, score it on fresh slides, then let a language-model petrographer identify a live unknown.</p></div>
+          <div><h3><span style="color:var(--biref-gold);font-family:var(--mono)">04 ·</span> AI</h3><p style="color:var(--muted);margin:0">Observe how an AI agent works in real time.</p></div>
+        </div>
+        <div class="cta-row" style="margin-top:18px">
+          <button class="pill-btn live" id="enterLab">Enter the lab →</button>
+        </div>
+      </div>
+    
+  </section>
+
+  <!-- ============ STATION 1 : MINERAL LAB ============ -->
+  <section class="station" id="lab">
+    <p class="eyebrow">Station 01: Mineral Lab</p>
+    <h2>The four major lunar minerals</h2>
+    <p class="sub" style="margin-bottom:20px">Pick a mineral, then drag the stage or hit <b>Rotate stage</b>. Watch how each behaves under crossed polars — that behavior <i>is</i> the diagnostic.</p>
+
+    <div class="specimen-tabs" id="labtabs"></div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="scope" id="labscope"></div>
+        <div class="stage-controls">
+          <button class="pill-btn" id="labrotate">⟳ Rotate stage</button>
+          <input type="range" id="labangle" min="0" max="360" value="0">
+          <span class="readout" id="labread">0°</span>
+        </div>
+        <p class="stage-note" style="margin-top:10px">Crossed polars (XPL) · stage rotation 0–360° · grains darken to <span style="color:#777">extinction</span> every 90°</p>
+      </div>
+
+      <div>
+        <div id="labinfo"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 2 : DATASET BUILDER ============ -->
+  <section class="station" id="data">
+    <p class="eyebrow">Station 02: Dataset</p>
+    <h2>Label a grain and build a dataset</h2>
+    <p class="sub" style="margin-bottom:18px">Upload and label.</p>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="progress-dots" id="dsdots" style="margin-bottom:12px"></div>
+        <div class="scope" id="dsscope"></div>
+        <div class="stage-controls">
+          <button class="pill-btn" id="dsrotate">⟳ Rotate stage</button>
+          <input type="range" id="dsangle" min="0" max="360" value="0">
+          <span class="readout" id="dsread">0°</span>
+        </div>
+        <div class="cta-row" style="margin-top:10px">
+          <button class="pill-btn" id="dsuploadbtn" title="Add your own thin-section image or GIF as a new specimen">⬆ Upload specimen (.gif / image)</button>
+          <input type="file" id="dsupload" accept="image/*,.gif" style="display:none">
+        </div>
+        <p class="stage-note" id="dsidlabel" style="margin-top:10px"></p>
+      </div>
+
+      <div class="panel">
+        <p class="eyebrow" style="color:var(--biref-blue);margin-bottom:14px">Record your observations</p>
+        <div id="dsfeatures"></div>
+
+        <div class="feat">
+          <label>Your identification</label>
+          <div class="seg" id="dslabelseg"></div>
+        </div>
+
+        <div class="cta-row">
+          <button class="pill-btn live" id="dsadd">Add to dataset</button>
+          <button class="pill-btn" id="dsskip">Skip specimen</button>
+          <button class="pill-btn" id="dsauto" title="Fill in the textbook-correct observations for this specimen">Auto-observe</button>
+        </div>
+        <p class="hint" id="dsmsg" style="margin-top:10px">&nbsp;</p>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:22px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <h3 style="margin:0">Labeled dataset <span style="font-family:var(--mono);color:var(--faint);font-size:13px">· <span id="dscount">0</span> rows</span></h3>
+        <div class="cta-row" style="margin:0">
+          <button class="pill-btn" id="dsexport">Export CSV</button>
+          <button class="pill-btn" id="dsexportjson">Export JSON</button>
+          <button class="pill-btn" id="dsclear">Clear</button>
+        </div>
+      </div>
+      <div class="ds-wrap">
+        <table class="ds" id="dstable">
+          <thead><tr>
+            <th>id</th><th>relief</th><th>biref</th><th>cleavage</th><th>twinning</th><th>opacity</th><th>label</th><th></th>
+          </tr></thead>
+          <tbody id="dsbody"></tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-top:10px">Aim for at least 2–3 examples of each mineral before moving on. More variety = a better classifier.</p>
+    </div>
+  </section>
+
+  <!-- ============ STATION 3 : TRAIN & DEPLOY ============ -->
+  <section class="station" id="agent">
+    <p class="eyebrow">Station 03: ML</p>
+    <h2>Train and deploy</h2>
+
+    <div class="two" style="margin-bottom:22px">
+      <div class="panel">
+        <h3>1 · Train the classifier</h3>
+        <p style="color:var(--muted)">Your labeled rows become a dataset for <b>k-nearest-neighbor (KNN)</b> classifier. To classify an unknown, KNN finds the most similar slides.</p>
+        <div class="conf-row" style="grid-template-columns:130px 1fr;margin-top:12px">
+          <span style="color:var(--faint)">neighbors (k)</span>
+          <div class="seg" id="kseg" style="max-width:220px">
+            <button data-k="1">1</button><button data-k="3" class="on">3</button><button data-k="5">5</button>
+          </div>
+        </div>
+        <div class="cta-row">
+          <button class="pill-btn live" id="train">Train on my dataset</button>
+        </div>
+        <p class="hint" id="trainmsg" style="margin-top:10px">No model yet — build a dataset in Station 02 first.</p>
+      </div>
+
+      <div class="panel">
+        <h3>2 · Evaluate on fresh slides</h3>
+        <p style="color:var(--muted)">Did your labeling generalize?</p>
+        <div class="cta-row">
+          <button class="pill-btn" id="evaluate" disabled>Run evaluation (12 slides)</button>
+        </div>
+        <div id="evalout" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>3 · Deploy the classifier on a live unknown</h3>
+      <div class="lab" style="margin-top:14px">
+        <div>
+          <div class="scope" id="agscope"></div>
+          <div class="stage-controls">
+            <button class="pill-btn" id="agrotate">⟳ Rotate stage</button>
+            <input type="range" id="agangle" min="0" max="360" value="0">
+            <span class="readout" id="agread">0°</span>
+          </div>
+          <div class="cta-row">
+            <button class="pill-btn" id="agnew">New unknown</button>
+            <button class="pill-btn" id="aguploadbtn" title="Classify your own thin-section image or GIF">⬆ Upload image / GIF</button>
+            <button class="pill-btn live" id="agclassify" disabled>Classify with my classifier</button>
+          </div>
+          <input type="file" id="agupload" accept="image/*,.gif" style="display:none">
+          <div id="agfeatwrap" style="display:none;margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
+            <p class="eyebrow" style="color:var(--biref-blue);margin-bottom:10px">Record this slide's optical properties, then classify</p>
+            <div id="agfeatures"></div>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow" style="color:var(--biref-green)">Verdict</p>
+          <div id="agresult"><p class="hint">Train your classifier, then classify the unknown on the left.</p></div>
+        </div>
+      </div>
+
+      <div id="aglearn" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px;display:none">
+        <p class="eyebrow" style="color:var(--biref-gold)">Online learning — the agent improves as you teach it</p>
+        <div class="three" style="margin:4px 0 6px">
+          <div><div class="bignum" id="lmem">0</div><div class="stat-cap">examples in memory</div></div>
+          <div><div class="bignum" id="ladd">0</div><div class="stat-cap">learned live from feedback</div></div>
+          <div><div class="bignum" id="lacc">—</div><div class="stat-cap">live accuracy (last 10)</div></div>
+        </div>
+        <div class="stat-cap" style="margin:12px 0 4px">learning curve — was the agent right, before you corrected it?</div>
+        <div id="lcurve"></div>
+      </div>
+
+      <div style="margin-top:26px;border-top:1px solid var(--line);padding-top:20px">
+        <p class="eyebrow" style="color:var(--biref-magenta)">Second opinion: LLM</p>
+        <p style="color:var(--muted);max-width:64ch">Your k-NN classifier reasons from numbers. This one reasons from words: describe a thin section and Claude will identify it and explain why. Try the live unknown's description, or write your own.</p>
+        <textarea id="aitext" placeholder="e.g. High relief, vivid second-order blue and gold interference colors, two cleavage directions meeting near 90 degrees, translucent."></textarea>
+        <div class="cta-row">
+          <button class="pill-btn live" id="aiask">Ask AI</button>
+          <button class="pill-btn" id="aifill">Describe the live unknown for me</button>
+        </div>
+        <div class="ai-out" id="aiout">Awaiting a description…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATION 4 : ACTIVE LEARNING ============ -->
+  <section class="station" id="active">
+    <p class="eyebrow">Station 04: AI agent</p>
+    <h2>Per Grain Classification</h2>
+    <p class="sub" style="margin-bottom:20px">Watch the two curves.</p>
+
+    <div class="lab">
+      <div class="panel">
+        <p class="eyebrow" style="color:var(--biref-magenta)">The grain it's least sure about</p>
+        <div class="scope" id="alscope" style="max-width:300px"></div>
+        <div id="alquery" style="margin-top:12px"></div>
+        <div class="stat-cap" style="margin:14px 0 6px">Give it the label
+        </div>
+        <div class="seg" id="aloracle"></div>
+        <div class="cta-row" style="margin-top:14px">
+          <button class="pill-btn" id="alstep">Agent labels 1 (auto)</button>
+          <button class="pill-btn live" id="alrun">Auto-run ×20</button>
+          <button class="pill-btn" id="alreset">Reset</button>
+        </div>
+        <div class="cta-row" style="margin-top:10px">
+          <button class="pill-btn" id="aluploadbtn" title="Add your own thin-section image or GIF to the pool">⬆ Add my image / GIF to the pool</button>
+          <input type="file" id="alupload" accept="image/*,.gif" style="display:none">
+        </div>
+        <div id="alfeatwrap" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+          <p class="eyebrow" style="color:var(--biref-blue);margin-bottom:10px">Set your grain's optical properties & true label, then add it</p>
+          <div id="alfeatures"></div>
+          <div class="feat" style="margin-top:6px">
+            <label>True mineral (answer key for your grain)</label>
+            <div class="seg" id="allabelseg"></div>
+          </div>
+          <div class="cta-row" style="margin-top:10px">
+            <button class="pill-btn live" id="aladdupload">Add grain to pool</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <p class="eyebrow" style="color:var(--biref-green)">Active vs random — test accuracy per label spent</p>
+        <div id="alchart"></div>
+        <div class="three" style="margin-top:14px">
+          <div><div class="bignum" id="allabels">0</div><div class="stat-cap">labels spent</div></div>
+          <div><div class="bignum" id="alacc" style="color:var(--biref-gold)">—</div><div class="stat-cap">active accuracy</div></div>
+          <div><div class="bignum" id="alrndacc" style="color:var(--muted)">—</div><div class="stat-cap">random accuracy</div></div>
+        </div>
+        <p class="hint" style="margin-top:12px"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   MINERAL MODEL  — the four major lunar minerals + ground-truth optics
+   feature encodings (ordinal):
+     relief    0 low · 1 moderate · 2 high
+     biref     0 grey/low · 1 moderate · 2 high/vivid   (opaque -> 0)
+     cleavage  0 none · 1 one direction · 2 two directions
+     twinning  0 absent · 1 present (polysynthetic)
+     opacity   0 translucent · 1 opaque
+   ========================================================================= */
+const MIN = {
+  plagioclase:{
+    name:'Plagioclase', sub:'(anorthite)', formula:'CaAl₂Si₂O₈',
+    color:'#9fb6d6',                       // tab swatch
+    truth:{relief:0,biref:0,cleavage:2,twinning:1,opacity:0},
+    key:{
+      'Habit':'Lath / tabular crystals',
+      'Relief':'Low — barely stands out from mount',
+      'Interference colour':'First-order greys & whites (low birefringence)',
+      'Diagnostic':'<span class="diag">Polysynthetic (albite) twinning</span> — fine parallel lamellae that go to extinction alternately',
+      'Cleavage':'Two directions, often faint',
+    },
+    ctx:'Builds the lunar highlands. The famous Apollo 15 "Genesis Rock" (15415) is nearly pure anorthite — a fragment of the Moon\'s original feldspar crust that floated atop a magma ocean ~4.4 billion years ago.'
+  },
+  pyroxene:{
+    name:'Pyroxene', sub:'(augite / pigeonite)', formula:'(Ca,Mg,Fe)₂Si₂O₆',
+    color:'#c8b46a',
+    truth:{relief:2,biref:2,cleavage:2,twinning:0,opacity:0},
+    key:{
+      'Habit':'Stubby prisms',
+      'Relief':'High — grains stand out strongly',
+      'Interference colour':'Bright second-order blues, golds, magentas',
+      'Cleavage':'<span class="diag">Two directions meeting near 90°</span>',
+      'Diagnostic':'High relief + high birefringence + good 90° cleavage',
+    },
+    ctx:'The dominant dark mineral of <b>mare basalts</b>. Lunar pyroxenes are iron-rich and chemically zoned, recording how the basaltic lava cooled. Apollo 12 and 15 returned classic pyroxene-rich basalts.'
+  },
+  olivine:{
+    name:'Olivine', sub:'(forsterite–fayalite)', formula:'(Mg,Fe)₂SiO₄',
+    color:'#7bbf86',
+    truth:{relief:2,biref:2,cleavage:0,twinning:0,opacity:0},
+    key:{
+      'Habit':'Rounded / equant grains',
+      'Relief':'High — strong outlines',
+      'Interference colour':'Vivid second- and third-order greens, pinks, blues',
+      'Cleavage':'<span class="diag">None</span> — breaks along irregular fractures instead',
+      'Diagnostic':'High relief & vivid colours but NO cleavage (vs. pyroxene)',
+    },
+    ctx:'Found in some mare basalts and likely abundant in the lunar mantle. Because there is no water on the Moon, lunar olivine is pristine — never serpentinized as it would be on Earth.'
+  },
+  ilmenite:{
+    name:'Ilmenite', sub:'(Fe-Ti oxide)', formula:'FeTiO₃',
+    color:'#5a5a66',
+    truth:{relief:2,biref:0,cleavage:0,twinning:0,opacity:1},
+    key:{
+      'Habit':'Platy / skeletal grains',
+      'Relief':'— (opaque)',
+      'Interference colour':'None — stays black in transmitted light',
+      'Diagnostic':'<span class="diag">Opaque</span>: solid black under any rotation; metallic grey in reflected light',
+      'Cleavage':'None visible',
+    },
+    ctx:'Abundant in <b>high-titanium mare basalts</b> (Apollo 11 & 17). It is the headline resource mineral of the Moon: split FeTiO₃ and you get oxygen, iron, and titanium, and its grains trap solar-wind helium-3.'
+  }
+};
+const ORDER = ['plagioclase','pyroxene','olivine','ilmenite'];
+const FEATURES = [
+  {key:'relief',   label:'Relief',                  opts:['Low','Moderate','High']},
+  {key:'biref',    label:'Birefringence',           opts:['Grey / low','Moderate','Vivid']},
+  {key:'cleavage', label:'Cleavage',                opts:['None','One dir.','Two dir.']},
+  {key:'twinning', label:'Twinning (lamellae)',     opts:['Absent','Present']},
+  {key:'opacity',  label:'Opacity',                 opts:['Translucent','Opaque']},
+];
+const LBLCOLOR = {plagioclase:'#9fb6d6',pyroxene:'#c8b46a',olivine:'#7bbf86',ilmenite:'#8a8a99'};
+
+/* trained-agent state — declared up front so Station 02's table render
+   (which runs at load) can safely reference MODEL before Station 03 executes */
+let MODEL=null, K=3;
+
+/* =========================================================================
+   PRNG  — seeded shuffle / evaluation randomness (no synthetic imagery)
+   ========================================================================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* This build renders REAL lunar imagery only (see MEDIA + SPECIMENS). */
+
+/* ── Force any GIF to loop forever ──────────────────────────────────────
+   A GIF's loop behaviour is baked into the file: a "NETSCAPE2.0"
+   application-extension block holds a loop count (0 = infinite). GIFs
+   exported to play once either omit that block or set the count to 1, so
+   they freeze on the last frame.
+
+   Preferred fix: read the GIF bytes, ensure an infinite-loop block is present
+   (rewriting or inserting it), and return a blob: URL that loops seamlessly.
+   While parsing, we also sum the per-frame delays to learn the clip duration.
+
+   Resolves to:
+     { patched:true,  url:<blob url>, durationMs }   when bytes were readable
+     { patched:false, durationMs:0 }                 when fetch is blocked
+                                                       (e.g. file:// local files)
+   The caller falls back to a timed src-reset loop when patched===false, so the
+   GIF still rotates forever in every environment. */
+const _gifLoopCache = new Map();
+function forceGifLoopSrc(url){
+  if(_gifLoopCache.has(url)) return _gifLoopCache.get(url);
+  const p = (async()=>{
+    try{
+      const buf = new Uint8Array(await (await fetch(url)).arrayBuffer());
+      if(buf.length<13 || buf[0]!==0x47||buf[1]!==0x49||buf[2]!==0x46) return {patched:false, durationMs:0};
+      let pos = 13;                                   // past 6-byte header + 7-byte logical screen descriptor
+      const packed = buf[10];
+      if(packed & 0x80){ pos += 3 * (1 << ((packed & 0x07) + 1)); }   // skip global colour table
+      const isLoopExt = (i)=> buf[i]===0x21 && buf[i+1]===0xFF && buf[i+2]===0x0B &&
+        String.fromCharCode(...buf.slice(i+3,i+11))==='NETSCAPE';
+
+      // Walk the whole stream: sum frame delays + note any existing loop block.
+      let durationMs=0, loopExtAt=-1, s=pos;
+      while(s < buf.length){
+        const b=buf[s];
+        if(b===0x3B) break;                            // trailer
+        if(b===0x21){                                  // extension introducer
+          if(buf[s+1]===0xF9){                         // Graphic Control Extension -> delay (1/100 s)
+            durationMs += ((buf[s+4] | (buf[s+5]<<8))||0)*10;
+          } else if(isLoopExt(s)){
+            loopExtAt=s;
+          }
+          s+=2;                                        // 0x21 + label
+          while(buf[s] && s<buf.length){ s += buf[s]+1; }   // skip data sub-blocks
+          s+=1; continue;
+        }
+        if(b===0x2C){                                  // image descriptor
+          s+=10;                                       // fixed part
+          const lct=buf[s-1];
+          if(lct & 0x80){ s += 3 * (1 << ((lct & 0x07)+1)); }  // local colour table
+          s+=1;                                        // LZW min code size
+          while(buf[s] && s<buf.length){ s += buf[s]+1; }      // image data sub-blocks
+          s+=1; continue;
+        }
+        s+=1;
+      }
+
+      let outBuf;
+      if(loopExtAt>=0){
+        // block: 0x21 0xFF 0x0B "NETSCAPE2.0" 0x03 0x01 <loLoop> <hiLoop> 0x00
+        // loop-count bytes are at +16 and +17 — zero them for infinite looping.
+        buf[loopExtAt+16]=0; buf[loopExtAt+17]=0;
+        outBuf=buf;
+      } else {
+        const loopBlock=new Uint8Array([0x21,0xFF,0x0B,0x4E,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2E,0x30,0x03,0x01,0x00,0x00,0x00]);
+        outBuf=new Uint8Array(buf.length+loopBlock.length);
+        outBuf.set(buf.slice(0,pos),0); outBuf.set(loopBlock,pos); outBuf.set(buf.slice(pos),pos+loopBlock.length);
+      }
+      const blobUrl=URL.createObjectURL(new Blob([outBuf],{type:'image/gif'}));
+      return {patched:true, url:blobUrl, durationMs};
+    }catch(e){ return {patched:false, durationMs:0}; }
+  })();
+  _gifLoopCache.set(url, p);
+  return p;
+}
+
+/* Fallback looping when the byte-patch can't run (fetch blocked, e.g. file://).
+   Restarts the GIF by re-assigning src with a cache-busting query param. The
+   true duration is unknown here, so we restart on a fixed cadence; the GIF
+   visibly snaps to frame 0 each cycle but keeps moving. Owned by ctrl so
+   switching specimens or stopping cancels it cleanly. */
+function startGifReplayLoop(ctrl, img, baseSrc, periodMs){
+  stopGifReplayLoop(ctrl);
+  img.src = baseSrc;                                   // initial play
+  const period = periodMs || 2600;                     // safe default cadence
+  ctrl._gifReplay = setInterval(()=>{
+    if(!img.isConnected){ stopGifReplayLoop(ctrl); return; }
+    img.src = baseSrc + (baseSrc.indexOf('?')<0?'?':'&') + 'r=' + Date.now();
+  }, period);
+}
+function stopGifReplayLoop(ctrl){
+  if(ctrl && ctrl._gifReplay){ clearInterval(ctrl._gifReplay); ctrl._gifReplay=null; }
+}
+
+/* a reusable interactive scope: wires a container + slider + rotate button */
+function makeScope(scopeEl, slider, readout, rotateBtn){
+  const ctrl={sec:null, media:null, angle:0, anim:null, imgEl:null, videoEl:null, frames:[]};
+
+  function renderMedia(){
+    const m=ctrl.media; if(!m) return;
+    const span=m.span||360, a=(((ctrl.angle%span)+span)%span)/span;
+    if(m.type==='frames' && ctrl.imgEl && ctrl.frames.length){
+      let idx=Math.round(a*ctrl.frames.length)%ctrl.frames.length;
+      const src=ctrl.frames[idx];
+      if(ctrl.imgEl.getAttribute('src')!==src) ctrl.imgEl.setAttribute('src',src);
+    } else if(m.type==='video' && ctrl.videoEl && ctrl.videoEl.duration){
+      ctrl.videoEl.currentTime = a * ctrl.videoEl.duration;
+    }
+    /* gif: auto-plays, nothing to scrub */
+  }
+  function draw(){
+    if(ctrl.media){ renderMedia(); }
+    readout.textContent = !ctrl.media ? '—'
+      : (ctrl.media.type==='gif') ? 'auto'
+      : (ctrl.media.type==='image') ? 'still'
+      : Math.round(ctrl.angle)+'°';
+  }
+  function fail(msg){ scopeEl.innerHTML='<div class="scope-ph">🌑 '+msg+'<br><span>Drop the file into your media/ folder and reload — see the config block near the top of this file.</span></div>'; }
+
+  // this exhibit renders REAL imagery only; missing media shows a placeholder
+  ctrl.placeholder=(msg)=>{ ctrl.media=null; ctrl.sec=null; slider.disabled=true;
+    scopeEl.innerHTML='<div class="scope-ph">🌑 '+msg+'</div>'; readout.textContent='—'; };
+  ctrl.set=ctrl.placeholder;
+
+  ctrl.setMedia=(m)=>{
+    stopGifReplayLoop(ctrl);                          // cancel any prior fallback replay timer
+    ctrl.sec=null; ctrl.media=m; ctrl.imgEl=null; ctrl.videoEl=null; ctrl.frames=[];
+    scopeEl.innerHTML='';
+    if(m.type==='frames'){
+      for(let i=0;i<m.count;i++){
+        const num=String((m.start||0)+i).padStart(m.pad||2,'0');
+        ctrl.frames.push(m.dir + (m.prefix||'') + num + '.' + (m.ext||'jpg'));
+      }
+      ctrl.frames.forEach(src=>{ const im=new Image(); im.src=src; });   // preload
+      const img=document.createElement('img'); img.alt='lunar thin section (real rotational series)';
+      img.onerror=()=>fail('Frame image not found:<br>'+img.getAttribute('src'));
+      img.src=ctrl.frames[0]; scopeEl.appendChild(img); ctrl.imgEl=img; slider.disabled=false;
+    } else if(m.type==='gif'){
+      const img=document.createElement('img'); img.alt='lunar rotational series (GIF)';
+      img.onerror=()=>fail('GIF not found:<br>'+m.src); scopeEl.appendChild(img); slider.disabled=true;
+      ctrl.imgEl=img;
+      // Loop the GIF forever in EVERY environment:
+      //  (1) preferred: rewrite the GIF's loop-count bytes to infinite (seamless) — needs fetch,
+      //      which works when the page is served over http(s) or same-origin.
+      //  (2) fallback: if the byte-patch can't run (e.g. file:// blocks fetch of local files),
+      //      force a restart by re-assigning src with a cache-buster on a timer. Not perfectly
+      //      seamless (it jumps to frame 0 each cycle) but guarantees continuous rotation.
+      forceGifLoopSrc(m.src).then(res=>{
+        if(ctrl.media!==m) return;                     // user switched specimens meanwhile
+        if(res && res.patched){
+          img.src=res.url;                             // (1) infinite-loop blob — nothing more to do
+        } else {
+          startGifReplayLoop(ctrl, img, m.src);        // (2) timed-replay fallback
+        }
+      }).catch(()=>{ if(ctrl.media===m) startGifReplayLoop(ctrl, img, m.src); });
+    } else if(m.type==='image'){
+      const img=document.createElement('img'); img.src=m.src; img.alt='lunar thin section (real specimen)';
+      img.onerror=()=>fail('Image not found:<br>'+m.src); scopeEl.appendChild(img); slider.disabled=true;
+    } else if(m.type==='video'){
+      const v=document.createElement('video'); v.src=m.src; v.muted=true; v.playsInline=true; v.preload='auto';
+      v.onerror=()=>fail('Video not found:<br>'+m.src); v.addEventListener('loadedmetadata',draw);
+      scopeEl.appendChild(v); ctrl.videoEl=v; slider.disabled=false;
+    }
+    draw();
+  };
+
+  ctrl.setAngle=(a)=>{ ctrl.angle=((a%360)+360)%360; slider.value=ctrl.angle; draw(); };
+  slider.addEventListener('input',()=>{ stop(); ctrl.angle=+slider.value; draw(); });
+  function stop(){ stopGifReplayLoop(ctrl); if(ctrl.anim){cancelAnimationFrame(ctrl.anim);ctrl.anim=null;rotateBtn.textContent='⟳ Rotate stage';} }
+  rotateBtn.addEventListener('click',()=>{
+    if(ctrl.media&&(ctrl.media.type==='gif'||ctrl.media.type==='image')) return;   // nothing to scrub
+    if(ctrl.anim){stop();return;}
+    rotateBtn.textContent='■ Stop';
+    let last=performance.now();
+    const step=(t)=>{ const dt=t-last; last=t; ctrl.angle=(ctrl.angle+dt*0.06)%360; slider.value=ctrl.angle; draw(); ctrl.anim=requestAnimationFrame(step); };
+    ctrl.anim=requestAnimationFrame(step);
+  });
+  ctrl.stop=stop;
+  return ctrl;
+}
+
+/* =========================================================================
+   NAVIGATION
+   ========================================================================= */
+function go(id){
+  document.querySelectorAll('.station').forEach(s=>s.classList.toggle('active',s.id===id));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.go===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+document.getElementById('enterLab').addEventListener('click',()=>go('lab'));
+
+/* =========================================================================
+   STATION 01 — MINERAL LAB
+   ========================================================================= */
+
+/* ───────────────────────────────────────────────────────────────────────
+   REAL ROTATIONAL-SERIES MEDIA  (optional drop-in)
+   ───────────────────────────────────────────────────────────────────────
+   Put your real lunar thin-section imagery in a folder next to this .html
+   and fill in an entry per mineral below. This exhibit uses REAL imagery
+   only — any mineral left out shows an "add your image" placeholder.
+
+   Three modes:
+     frames : still photos at equal stage-rotation steps  (BEST — slider scrubs the real rotation)
+              {type:'frames', dir:'media/plagioclase/', count:36, ext:'jpg', pad:2}
+              -> expects media/plagioclase/00.jpg ... 35.jpg  (00 = 0°, evenly spaced over `span`)
+              optional: span (default 360), start (first number, default 0),
+                        prefix (filename prefix, default ''), pad (zero-pad width, default 2)
+     video  : one clip of a full stage turn; slider scrubs currentTime
+              {type:'video', src:'media/pyroxene.mp4', span:360}
+     gif     : simplest; auto-loops, slider is disabled for that mineral
+              {type:'gif', src:'media/olivine.gif'}
+
+   credit: optional attribution string shown under the viewer.
+   Tip: turn a GIF or video into frames with ffmpeg, e.g.
+        ffmpeg -i rotation.mp4 -vf fps=10 media/plagioclase/%02d.jpg
+        (then ensure the first file is 00.jpg; renumber if needed)
+   ─────────────────────────────────────────────────────────────────────── */
+const MEDIA = {
+  plagioclase: {type:'gif', src:'media/plagioclase.gif'},
+  pyroxene: {type:'gif',  src:'media/pyroxene.gif'},
+  olivine: {type:'gif', src:'media/olivine.gif'},
+  ilmenite:{type:'gif', src:'media/ilmenite.gif'}
+};
+
+const labScope=makeScope(
+  document.getElementById('labscope'),
+  document.getElementById('labangle'),
+  document.getElementById('labread'),
+  document.getElementById('labrotate'));
+let labCurrent='plagioclase';
+
+function renderLabTabs(){
+  const el=document.getElementById('labtabs');
+  el.innerHTML=ORDER.map(m=>{
+    const d=MIN[m];
+    return `<button data-m="${m}" class="${m===labCurrent?'active':''}">
+      <span class="swatch" style="background:${d.color}"></span>${d.name}</button>`;
+  }).join('');
+  el.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{labCurrent=b.dataset.m;selectLab();}));
+}
+function selectLab(){
+  renderLabTabs();
+  const d=MIN[labCurrent];
+  labScope.stop();
+  const media=MEDIA[labCurrent];
+  if(media){ labScope.setMedia(media); }
+  else { labScope.placeholder('Add a real '+MIN[labCurrent].name+' rotation (GIF / frames / video) to the MEDIA block at the top of this file.'); }
+  labScope.setAngle(43);                    // park near max colour
+  // credit line under the viewer (real media) or default note
+  const note=document.querySelector('#lab .stage-note');
+  if(note){
+    note.innerHTML = media
+      ? `Real rotational series${media.credit?` · <span style="color:var(--muted)">${media.credit}</span>`:''}${media.type==='gif'?' · auto-loop (slider disabled)':' · drag the stage to scrub'}`
+      : 'Crossed polars (XPL) · stage rotation 0–360° · grains darken to <span style="color:#777">extinction</span> every 90°';
+  }
+  const rows=Object.entries(d.key).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+  document.getElementById('labinfo').innerHTML=`
+    <h3 style="font-size:24px">${d.name} <span style="color:var(--muted);font-weight:400;font-size:16px">${d.sub}</span></h3>
+    <p class="formula">${d.formula}</p>
+    <table class="keytable">${rows}</table>
+    <div class="ctx"><b>Lunar context.</b> ${d.ctx}</div>`;
+}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+try{ renderLabTabs(); selectLab(); }catch(e){ console.error('Station 01 init:',e); }
+
+/* =========================================================================
+   STATION 02 — DATASET BUILDER
+   ========================================================================= */
+const dsScope=makeScope(
+  document.getElementById('dsscope'),
+  document.getElementById('dsangle'),
+  document.getElementById('dsread'),
+  document.getElementById('dsrotate'));
+
+/* ───────────────────────────────────────────────────────────────────────
+   REAL SPECIMENS for Station 02 (Dataset Builder)
+   ───────────────────────────────────────────────────────────────────────
+   Each entry is ONE unknown the visitor examines and labels. `mineral` is the
+   ground-truth answer — used to score the visitor and to power "Auto-observe".
+   Provide as many as you can; variety is what makes the exercise meaningful
+   (ideally several different slides per mineral, not just one each).
+     img    : a still thin-section frame (jpg/png/gif)  -> shown statically
+     media  : optional, for a rotational series instead of a still:
+              media:{type:'frames', dir:'media/specimens/plag1/', count:36, ext:'jpg'}
+              media:{type:'gif',    src:'media/specimens/plag1.gif'}
+   SPECIMENS drives Station 02 (label), Station 03 (live unknowns) and
+   Station 04 (active learning) — add as many real slides as you can
+   (ideally several per mineral). With none filled in, those stations show
+   an "add specimens" placeholder; visitors can also upload their own
+   images/GIFs directly in Stations 02, 03 and 04.
+   ─────────────────────────────────────────────────────────────────────── */
+const SPECIMENS = [
+  // {id:'S-01', mineral:'plagioclase', img:'media/specimens/plag1.jpg'},
+  // {id:'S-02', mineral:'plagioclase', img:'media/specimens/plag2.jpg'},
+  // {id:'S-03', mineral:'pyroxene',    img:'media/specimens/pyx1.jpg'},
+  // {id:'S-04', mineral:'olivine',     img:'media/specimens/oliv1.jpg'},
+  // {id:'S-05', mineral:'ilmenite',    img:'media/specimens/ilm1.jpg'},
+];
+
+// specimen pool — REAL images only (drawn from SPECIMENS). Stations 02, 03 and 04 all use it.
+function makePool(){
+  const pool=SPECIMENS.map((s,i)=>{
+    const truth={...MIN[s.mineral].truth};
+    return {id:s.id||('S-'+String(i+1).padStart(2,'0')), mineral:s.mineral, real:true,
+            media: s.media || {type:'image', src:s.img}, truth, suggested:{...truth}};
+  });
+  const r=mulberry32(98765);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return pool;
+}
+// a real thin-section image for a given mineral (used by Stations 03 & 04), or a placeholder
+function phImg(m){return '<div class="scope-ph">🌑 '+MIN[m].name+' image not found — check the path in SPECIMENS</div>';}
+function realImgTag(m){
+  const list=SPECIMENS.filter(s=>s.mineral===m);
+  if(list.length){
+    const s=list[Math.floor(Math.random()*list.length)];
+    const src=s.img||(s.media&&s.media.src)||'';
+    if(src) return '<img src="'+src+'" alt="'+MIN[m].name+' thin section" style="width:100%;display:block" onerror="this.outerHTML=phImg(\''+m+'\')">';
+  }
+  return '<div class="scope-ph">🌑 Add a real '+MIN[m].name+' image to SPECIMENS to show it here</div>';
+}
+let POOL=makePool(), dsIndex=0;
+let observed={relief:null,biref:null,cleavage:null,twinning:null,opacity:null}, chosenLabel=null;
+let DATASET=[];
+
+function renderDsFeatures(){
+  const el=document.getElementById('dsfeatures');
+  el.innerHTML=FEATURES.map(f=>`
+    <div class="feat">
+      <label>${f.label}</label>
+      <div class="seg" data-feat="${f.key}">
+        ${f.opts.map((o,i)=>`<button data-v="${i}" class="${observed[f.key]===i?'on':''}">${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  el.querySelectorAll('.seg').forEach(seg=>{
+    seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      observed[seg.dataset.feat]=+b.dataset.v;
+      seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    }));
+  });
+  // label segment
+  const lseg=document.getElementById('dslabelseg');
+  lseg.innerHTML=ORDER.map(m=>`<button data-l="${m}" class="${chosenLabel===m?'on':''}">${MIN[m].name}</button>`).join('');
+  lseg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    chosenLabel=b.dataset.l;
+    lseg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  }));
+}
+function loadSpecimen(){
+  if(!POOL.length){ dsScope.placeholder('No specimens yet — add real unknowns to the SPECIMENS block at the top of this file.');
+    document.getElementById('dsidlabel').innerHTML='Specimen pool empty · add images to SPECIMENS';
+    observed={relief:null,biref:null,cleavage:null,twinning:null,opacity:null}; chosenLabel=null;
+    renderDsFeatures(); renderDots(); return; }
+  const sp=POOL[dsIndex%POOL.length];
+  dsScope.stop();
+  dsScope.setMedia(sp.media);
+  dsScope.setAngle(40);
+  document.getElementById('dsidlabel').innerHTML=`Specimen <b style="color:var(--regolith)">${sp.id}</b> · ${sp.uploaded?'<span style="color:var(--biref-blue)">your upload</span>':'unknown'} · crossed polars`;
+  observed={relief:null,biref:null,cleavage:null,twinning:null,opacity:null}; chosenLabel=null;
+  renderDsFeatures(); renderDots(); setMsg('');
+}
+function renderDots(){
+  const el=document.getElementById('dsdots');
+  const done=new Set(DATASET.map(d=>d.id));
+  el.innerHTML='Progress &nbsp;'+POOL.map(p=>`<span class="dot ${done.has(p.id)?'done':''}" title="${p.id}"></span>`).join('')+
+    `&nbsp; <span style="margin-left:6px">${done.size}/${POOL.length} labeled</span>`;
+}
+function setMsg(t,c){const m=document.getElementById('dsmsg');m.textContent=t||'\u00a0';m.style.color=c||'var(--faint)';}
+
+/* Generic optical-feature controls — renders the five FEATURE segments into any
+   container, writes selections into `state` (keyed by feature), and fires
+   onChange after each pick. Used by uploaded specimens in Stations 03 & 04. */
+function renderFeatureControls(container, state, onChange){
+  container.innerHTML=FEATURES.map(f=>`
+    <div class="feat">
+      <label>${f.label}</label>
+      <div class="seg" data-feat="${f.key}">
+        ${f.opts.map((o,i)=>`<button data-v="${i}" class="${state[f.key]===i?'on':''}">${o}</button>`).join('')}
+      </div>
+    </div>`).join('');
+  container.querySelectorAll('.seg').forEach(seg=>{
+    seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      state[seg.dataset.feat]=+b.dataset.v;
+      seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+      if(onChange) onChange();
+    }));
+  });
+}
+function featuresComplete(state){ return FEATURES.every(f=>state[f.key]!==null && state[f.key]!==undefined); }
+
+document.getElementById('dsadd').addEventListener('click',()=>{
+  for(const f of FEATURES) if(observed[f.key]===null){ setMsg('Record every optical property first — '+f.label+' is blank.','var(--biref-magenta)'); return; }
+  if(!chosenLabel){ setMsg('Choose an identification before adding the row.','var(--biref-magenta)'); return; }
+  const sp=POOL[dsIndex%POOL.length];
+  DATASET=DATASET.filter(d=>d.id!==sp.id);
+  DATASET.push({id:sp.id, ...observed, label:chosenLabel, truth:sp.mineral||chosenLabel});
+  renderTable();
+  if(!sp.mineral){
+    setMsg(`Added your specimen ${sp.id} as ${MIN[chosenLabel].name}. (No reference answer for an uploaded slide — the agent trusts your label.)`,'var(--biref-gold)');
+  } else {
+    const correct = chosenLabel===sp.mineral;
+    setMsg(correct?`Added ${sp.id}. ✓ matches the reference label.`:`Added ${sp.id}. (Reference says ${MIN[sp.mineral].name} — that's fine, the agent learns from YOUR labels.)`,
+           correct?'var(--biref-green)':'var(--biref-gold)');
+  }
+  dsIndex++; setTimeout(loadSpecimen,650);
+});
+document.getElementById('dsskip').addEventListener('click',()=>{dsIndex++;loadSpecimen();});
+document.getElementById('dsauto').addEventListener('click',()=>{
+  const sp=POOL[dsIndex%POOL.length];
+  if(!sp.mineral){ setMsg('Auto-observe is only for the reference specimens — your uploaded slide has no answer key. Record what you see yourself.','var(--biref-gold)'); return; }
+  observed={...sp.suggested}; chosenLabel=sp.mineral; renderDsFeatures();
+  setMsg('Filled with the textbook reading for this specimen. Review, then add.','var(--biref-blue)');
+});
+
+/* ── Upload your own specimen (.gif or any image) ───────────────────────
+   The chosen file becomes a brand-new unknown in the pool. It has no
+   ground-truth mineral, so there is no "correct" answer to score against
+   and Auto-observe is unavailable for it — the visitor records what they
+   see and assigns the label themselves, exactly as intended for a real
+   unlabeled slide. GIFs are routed through the same loop-forever patch as
+   the built-in media. */
+let uploadCounter=0;
+document.getElementById('dsuploadbtn').addEventListener('click',()=>document.getElementById('dsupload').click());
+document.getElementById('dsupload').addEventListener('change',(e)=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  if(!/^image\//.test(file.type) && !/\.gif$/i.test(file.name)){
+    setMsg('Please choose an image file (.gif, .png, .jpg, .webp…).','var(--biref-magenta)');
+    e.target.value=''; return;
+  }
+  const url=URL.createObjectURL(file);
+  const isGif=/gif$/i.test(file.type) || /\.gif$/i.test(file.name);
+  const id='U-'+String(++uploadCounter).padStart(2,'0');
+  const neutral={relief:null,biref:null,cleavage:null,twinning:null,opacity:null};
+  const sp={
+    id, mineral:null, real:true, uploaded:true,
+    media: isGif ? {type:'gif', src:url} : {type:'image', src:url},
+    truth:neutral, suggested:neutral
+  };
+  POOL.push(sp);
+  dsIndex=POOL.length-1;          // jump straight to the uploaded specimen
+  loadSpecimen();
+  setMsg(`Loaded your specimen ${id}. Record what you observe, choose a label, then Add to dataset.`,'var(--biref-green)');
+  e.target.value='';              // allow re-uploading the same file later
+});
+
+function labelChip(m){return `<span class="lbl-chip" style="background:${LBLCOLOR[m]}22;color:${LBLCOLOR[m]};box-shadow:inset 0 0 0 1px ${LBLCOLOR[m]}55">${MIN[m].name}</span>`;}
+function ordTxt(f,v){return FEATURES.find(x=>x.key===f).opts[v];}
+function renderTable(){
+  document.getElementById('dscount').textContent=DATASET.length;
+  document.getElementById('dsbody').innerHTML=DATASET.map((d,i)=>`
+    <tr>
+      <td>${d.id}</td>
+      <td>${ordTxt('relief',d.relief)}</td>
+      <td>${ordTxt('biref',d.biref)}</td>
+      <td>${ordTxt('cleavage',d.cleavage)}</td>
+      <td>${ordTxt('twinning',d.twinning)}</td>
+      <td>${ordTxt('opacity',d.opacity)}</td>
+      <td>${labelChip(d.label)}</td>
+      <td><span class="row-x" data-i="${i}">✕</span></td>
+    </tr>`).join('');
+  document.querySelectorAll('.row-x').forEach(x=>x.addEventListener('click',()=>{DATASET.splice(+x.dataset.i,1);renderTable();renderDots();}));
+  renderDots(); refreshTrainState();
+}
+document.getElementById('dsclear').addEventListener('click',()=>{DATASET=[];renderTable();});
+document.getElementById('dsexport').addEventListener('click',()=>{
+  const head='id,relief,biref,cleavage,twinning,opacity,label\n';
+  const rows=DATASET.map(d=>[d.id,d.relief,d.biref,d.cleavage,d.twinning,d.opacity,d.label].join(',')).join('\n');
+  download('lunar_dataset.csv', head+rows);
+});
+document.getElementById('dsexportjson').addEventListener('click',()=>download('lunar_dataset.json',JSON.stringify(DATASET,null,2)));
+function download(name,txt){const b=new Blob([txt],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+
+try{ loadSpecimen(); renderTable(); }catch(e){ console.error('Station 02 init:',e); }
+
+/* =========================================================================
+   STATION 03 — TRAIN, EVALUATE, DEPLOY (k-NN agent)
+   ========================================================================= */
+const FW={relief:1,biref:1,cleavage:1.1,twinning:1.4,opacity:2.2}; // feature weights (opacity & twins are strong)
+
+document.querySelectorAll('#kseg button').forEach(b=>b.addEventListener('click',()=>{
+  K=+b.dataset.k; document.querySelectorAll('#kseg button').forEach(x=>x.classList.toggle('on',x===b));
+}));
+function dist(a,b){let s=0;for(const f of FEATURES){const d=(a[f.key]-b[f.key]);s+=FW[f.key]*d*d;}return Math.sqrt(s);}
+function classify(x){
+  if(!MODEL||!MODEL.length)return null;
+  const ds=MODEL.map(m=>({label:m.label,d:dist(x,m)})).sort((a,b)=>a.d-b.d);
+  const near=ds.slice(0,Math.min(K,ds.length));
+  const votes={}; near.forEach(n=>votes[n.label]=(votes[n.label]||0)+1/(1+n.d));
+  const total=Object.values(votes).reduce((a,b)=>a+b,0);
+  const ranked=Object.entries(votes).map(([l,v])=>({label:l,p:v/total})).sort((a,b)=>b.p-a.p);
+  return {pred:ranked[0].label, ranked, near};
+}
+function refreshTrainState(){
+  const ok=DATASET.length>=4 && new Set(DATASET.map(d=>d.label)).size>=2;
+  const tm=document.getElementById('trainmsg');
+  if(!MODEL){
+    tm.textContent = DATASET.length===0 ? 'No model yet — build a dataset in Station 02 first.'
+      : ok ? `Ready: ${DATASET.length} labeled rows across ${new Set(DATASET.map(d=>d.label)).size} minerals.`
+           : `Add a few more rows — need ≥4 rows and ≥2 different minerals (have ${DATASET.length} rows).`;
+  }
+}
+document.getElementById('train').addEventListener('click',()=>{
+  if(DATASET.length<4 || new Set(DATASET.map(d=>d.label)).size<2){
+    document.getElementById('trainmsg').textContent='Need at least 4 rows spanning ≥2 minerals. Back to Station 02.';
+    document.getElementById('trainmsg').style.color='var(--biref-magenta)'; return;
+  }
+  MODEL=DATASET.map(d=>({relief:d.relief,biref:d.biref,cleavage:d.cleavage,twinning:d.twinning,opacity:d.opacity,label:d.label}));
+  const tm=document.getElementById('trainmsg');
+  tm.style.color='var(--biref-green)';
+  tm.textContent=`✓ Agent trained on ${MODEL.length} examples (k=${K}). It now classifies by nearest-neighbour vote.`;
+  document.getElementById('evaluate').disabled=false;
+  document.getElementById('agclassify').disabled=false;
+  LEARN={rounds:0, correct:0, added:0, hist:[], curve:[]};      // fresh learning curve
+  const al=document.getElementById('aglearn'); if(al) al.style.display='none';
+});
+
+// EVALUATE on 12 fresh slides (new seeds, never labeled)
+document.getElementById('evaluate').addEventListener('click',()=>{
+  if(!MODEL)return;
+  const labels=ORDER; const cm={}; labels.forEach(a=>{cm[a]={};labels.forEach(b=>cm[a][b]=0);});
+  let correct=0,total=0;
+  const r=mulberry32(Date.now()>>>0);
+  for(let i=0;i<12;i++){
+    const m=ORDER[i%4];
+    // present the textbook reading with light noise (the "true" optical signature)
+    const x={...MIN[m].truth};
+    if(m==='plagioclase'&&r()<0.25)x.twinning=0;
+    if(m==='pyroxene'&&r()<0.2)x.cleavage=1;
+    const out=classify(x); if(!out)continue;
+    cm[m][out.pred]++; total++; if(out.pred===m)correct++;
+  }
+  const acc=total?Math.round(100*correct/total):0;
+  let mh='<table class="matrix"><tr><th>actual ↓ / pred →</th>'+labels.map(l=>`<th>${MIN[l].name.slice(0,4)}</th>`).join('')+'</tr>';
+  labels.forEach(a=>{mh+=`<tr><th>${MIN[a].name}</th>`+labels.map(b=>{const v=cm[a][b];return `<td class="${a===b&&v?'diagc':''}">${v||''}</td>`}).join('')+'</tr>';});
+  mh+='</table>';
+  document.getElementById('evalout').innerHTML=`
+    <div style="display:flex;align-items:baseline;gap:14px;margin-bottom:10px">
+      <span class="bignum" style="color:${acc>=75?'var(--biref-green)':acc>=50?'var(--biref-gold)':'var(--biref-magenta)'}">${acc}%</span>
+      <span class="stat-cap">accuracy on ${total} unseen slides</span>
+    </div>
+    <div class="stat-cap" style="margin-bottom:6px">confusion matrix</div>${mh}
+    <p class="hint" style="margin-top:10px">${acc>=75?'Strong generalisation — your labels captured the real diagnostics.':'Mixed results. The usual culprit is olivine vs pyroxene (cleavage!) or missed plagioclase twins. Add cleaner examples and retrain.'}</p>`;
+});
+
+// DEPLOY: live unknown
+const agScope=makeScope(
+  document.getElementById('agscope'),
+  document.getElementById('agangle'),
+  document.getElementById('agread'),
+  document.getElementById('agrotate'));
+let liveUnknown=null, lastOut=null, liveCounter=0;
+let LEARN={rounds:0, correct:0, added:0, hist:[], curve:[]};
+
+/* live unknowns carry realistic observational noise, so the agent makes early
+   mistakes it can actually LEARN from once you correct it */
+function noisyVec(m){
+  const v={...MIN[m].truth}, r=Math.random();
+  if(m==='plagioclase' && r<0.5) v.twinning=0;            // faint twins missed
+  else if(m==='pyroxene' && r<0.4) v.cleavage=1;          // only one cleavage caught
+  else if(m==='olivine'  && r<0.4) v.cleavage=1;          // fracture mistaken for cleavage
+  if(!v.opacity && Math.random()<0.3)
+    v.relief=Math.max(0,Math.min(2, v.relief+(Math.random()<0.5?-1:1)));
+  return v;
+}
+function newUnknown(){
+  if(!POOL.length){ agScope.placeholder('Add real specimens to SPECIMENS (top of file) to deploy the agent on real unknowns.');
+    liveUnknown=null; document.getElementById('agresult').innerHTML='<p class="hint">No specimen pool yet — fill in the SPECIMENS block.</p>'; return; }
+  const sp=POOL[Math.floor(Math.random()*POOL.length)];
+  const m=sp.mineral;
+  liveUnknown={mineral:m, x:noisyVec(m), sp}; lastOut=null;
+  agScope.stop(); agScope.setMedia(sp.media); agScope.setAngle(42);
+  document.getElementById('agresult').innerHTML='<p class="hint">New unknown loaded. Hit "Classify with my agent".</p>';
+}
+document.getElementById('agnew').addEventListener('click',()=>{ hideAgFeatures(); newUnknown(); });
+
+/* ── Station 03: classify YOUR OWN uploaded image/GIF ───────────────────
+   The upload becomes the live unknown with no ground-truth mineral. You set
+   its optical properties with the controls that appear, then the trained
+   k-NN agent classifies those features exactly as it would any slide. */
+let agUploadCounter=0;
+function hideAgFeatures(){ const w=document.getElementById('agfeatwrap'); if(w) w.style.display='none'; }
+document.getElementById('aguploadbtn').addEventListener('click',()=>document.getElementById('agupload').click());
+document.getElementById('agupload').addEventListener('change',(e)=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  if(!/^image\//.test(file.type) && !/\.gif$/i.test(file.name)){
+    document.getElementById('agresult').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Please choose an image file (.gif, .png, .jpg, .webp…).</p>';
+    e.target.value=''; return;
+  }
+  const url=URL.createObjectURL(file);
+  const isGif=/gif$/i.test(file.type) || /\.gif$/i.test(file.name);
+  const id='U-'+String(++agUploadCounter).padStart(2,'0');
+  agScope.stop();
+  agScope.setMedia(isGif?{type:'gif',src:url}:{type:'image',src:url});
+  agScope.setAngle(42);
+  // live unknown with blank features for the user to fill in
+  liveUnknown={mineral:null, uploaded:true, id, x:{relief:null,biref:null,cleavage:null,twinning:null,opacity:null}};
+  lastOut=null;
+  const wrap=document.getElementById('agfeatwrap'); wrap.style.display='block';
+  const btn=document.getElementById('agclassify');
+  const sync=()=>{ btn.disabled = !(MODEL && featuresComplete(liveUnknown.x)); };
+  renderFeatureControls(document.getElementById('agfeatures'), liveUnknown.x, sync);
+  sync();
+  document.getElementById('agresult').innerHTML=`<p class="hint">Your image <b style="color:var(--regolith)">${id}</b> is loaded. Record its optical properties on the left${MODEL?'':' (and train the agent in step 1)'}, then hit “Classify with my agent”.</p>`;
+  e.target.value='';
+});
+
+function sparkline(arr){
+  if(arr.length<2) return '<span class="hint">Teach a few grains to see the curve…</span>';
+  const W=460,H=66,pad=8;
+  const pts=arr.map((v,i)=>[pad+(W-2*pad)*i/(arr.length-1), pad+(H-2*pad)*(1-v)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px">
+    <line x1="${pad}" y1="${pad}" x2="${W-pad}" y2="${pad}" stroke="var(--line)" stroke-width="1"/>
+    <line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="var(--line)" stroke-width="1"/>
+    <path d="${d}" fill="none" stroke="var(--biref-gold)" stroke-width="2"/>
+    ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.4" fill="var(--biref-gold)"/>`).join('')}
+  </svg>`;
+}
+function updateLearnPanel(){
+  document.getElementById('aglearn').style.display='block';
+  document.getElementById('lmem').textContent=MODEL?MODEL.length:0;
+  document.getElementById('ladd').textContent=LEARN.added;
+  const last10=LEARN.hist.slice(-10);
+  document.getElementById('lacc').textContent=last10.length?Math.round(100*last10.reduce((a,b)=>a+b,0)/last10.length)+'%':'—';
+  document.getElementById('lcurve').innerHTML=sparkline(LEARN.curve);
+}
+function teach(label){
+  if(!liveUnknown||!lastOut||!MODEL) return;
+  const agentRight=lastOut.pred===label;
+  const ex={relief:liveUnknown.x.relief,biref:liveUnknown.x.biref,cleavage:liveUnknown.x.cleavage,
+            twinning:liveUnknown.x.twinning,opacity:liveUnknown.x.opacity,label};
+  MODEL.push({...ex});                                    // <-- online learning: grow agent memory
+  const rowId = liveUnknown.uploaded ? (liveUnknown.id||('U-'+(++liveCounter))) : ('LIVE-'+(++liveCounter));
+  DATASET.push({id:rowId, ...ex, truth:liveUnknown.mineral||label});
+  renderTable();
+  LEARN.rounds++; if(agentRight)LEARN.correct++; LEARN.added++;
+  LEARN.hist.push(agentRight?1:0);
+  const last10=LEARN.hist.slice(-10);
+  LEARN.curve.push(last10.reduce((a,b)=>a+b,0)/last10.length);
+  updateLearnPanel();
+  const refLine = liveUnknown.mineral
+    ? (label===liveUnknown.mineral?' (matches the reference ✓)':` — reference says ${MIN[liveUnknown.mineral].name}`)
+    : ' — your uploaded slide (no reference answer)';
+  document.getElementById('agresult').innerHTML=`
+    <p class="hint" style="color:var(--biref-green)">✓ Learned. The agent ${agentRight?'already had this right':'was wrong and just corrected itself'} — memory is now ${MODEL.length} examples.</p>
+    <p class="hint" style="margin-top:6px">You labeled it <b style="color:${LBLCOLOR[label]}">${MIN[label].name}</b>${refLine}. Loading the next unknown…</p>`;
+  hideAgFeatures();
+  setTimeout(newUnknown, 1100);
+}
+
+document.getElementById('agclassify').addEventListener('click',()=>{
+  if(!MODEL){document.getElementById('agresult').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Train the agent first (step 1).</p>';return;}
+  if(!liveUnknown)newUnknown();
+  if(!liveUnknown){document.getElementById('agresult').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Add real specimens to SPECIMENS (top of file) first.</p>';return;}
+  if(liveUnknown.uploaded && !featuresComplete(liveUnknown.x)){
+    document.getElementById('agresult').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Record every optical property for your uploaded slide first.</p>';return;
+  }
+  const out=classify(liveUnknown.x); lastOut=out;
+  const bars=ORDER.map(m=>{
+    const hit=out.ranked.find(r=>r.label===m); const p=hit?hit.p:0;
+    return `<div class="conf-row"><span style="color:${LBLCOLOR[m]}">${MIN[m].name}</span>
+      <div class="bar"><i style="width:${(p*100).toFixed(0)}%;background:${LBLCOLOR[m]}"></i></div>
+      <span style="text-align:right">${(p*100).toFixed(0)}%</span></div>`;
+  }).join('');
+  const neigh=out.near.map(n=>`<span class="chip" style="color:${LBLCOLOR[n.label]}">${MIN[n.label].name} · d=${n.d.toFixed(2)}</span>`).join('');
+  document.getElementById('agresult').innerHTML=`
+    <div style="margin-bottom:6px"><span class="stat-cap">prediction</span></div>
+    <div class="bignum" style="color:${LBLCOLOR[out.pred]};margin-bottom:14px">${MIN[out.pred].name}</div>
+    ${bars}
+    <div class="stat-cap" style="margin:14px 0 4px">nearest labeled neighbours (k=${K})</div>
+    <div class="nn">${neigh}</div>
+    <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">
+      <div class="stat-cap" style="margin-bottom:8px">Teach the agent — what is this grain really?</div>
+      <div class="seg" id="agteach">${ORDER.map(m=>`<button data-l="${m}" class="${m===out.pred?'on':''}">${MIN[m].name}</button>`).join('')}</div>
+      <p class="hint" style="margin-top:8px">It guessed <b style="color:${LBLCOLOR[out.pred]}">${MIN[out.pred].name}</b>. Confirm it, or click the correct mineral — either way the agent learns from your answer.</p>
+    </div>`;
+  document.querySelectorAll('#agteach button').forEach(b=>b.addEventListener('click',()=>teach(b.dataset.l)));
+});
+newUnknown();
+
+/* =========================================================================
+   AI PETROGRAPHER — Anthropic API (language-model second opinion)
+   ========================================================================= */
+function describeUnknown(){
+  if(!liveUnknown)newUnknown();
+  if(!liveUnknown)return null;
+  const t=MIN[liveUnknown.mineral].truth;
+  const reliefTxt=['low relief','moderate relief','high relief'][t.relief];
+  const birefTxt=['first-order grey interference colours','moderate birefringence','vivid second-order interference colours'][t.biref];
+  const cleavTxt=['no visible cleavage (irregular fracture)','one cleavage direction','two cleavage directions meeting near 90°'][t.cleavage];
+  const twin=t.twinning?'fine parallel twin lamellae that go to extinction alternately':'no twinning';
+  const opa=t.opacity?'the grains are completely opaque, staying black in transmitted light under any stage rotation':'the grains are translucent';
+  return `Thin section under crossed polars: ${reliefTxt}, ${birefTxt}, ${cleavTxt}, ${twin}; ${opa}.`;
+}
+document.getElementById('aifill').addEventListener('click',()=>{const d=describeUnknown(); if(d)document.getElementById('aitext').value=d;});
+
+document.getElementById('aiask').addEventListener('click',async()=>{
+  const desc=document.getElementById('aitext').value.trim();
+  const out=document.getElementById('aiout');
+  if(!desc){out.textContent='Type or generate a thin-section description first.';return;}
+  out.textContent='Consulting the AI petrographer…';
+  const sys="You are an expert lunar petrographer guiding a museum visitor. From a thin-section description under crossed polars, identify which ONE of the four major lunar minerals it most likely is: Plagioclase (anorthite), Pyroxene (augite/pigeonite), Olivine, or Ilmenite. Reply in 3-4 short sentences: (1) your identification, (2) the single most diagnostic clue you used, (3) one sentence of lunar context. Be warm and clear, no markdown headers.";
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,
+        messages:[{role:"user",content:sys+"\n\nDESCRIPTION:\n"+desc}]})
+    });
+    const data=await res.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    out.textContent=txt||'No response received. Try rephrasing the description.';
+  }catch(e){
+    out.textContent='Could not reach the AI petrographer right now. Your trained k-NN agent above still works offline — that one runs entirely on your own labeled data.';
+  }
+});
+
+refreshTrainState();
+
+/* =========================================================================
+   STATION 04 — ACTIVE LEARNING (the agent chooses what to label)
+   ========================================================================= */
+function classifyWith(x,mem,k){
+  const ds=mem.map(m=>({label:m.label,d:dist(x,m)})).sort((a,b)=>a.d-b.d);
+  const near=ds.slice(0,Math.min(k,ds.length));
+  const votes={}; near.forEach(n=>votes[n.label]=(votes[n.label]||0)+1/(1+n.d));
+  const tot=Object.values(votes).reduce((a,b)=>a+b,0)||1;
+  const ranked=Object.entries(votes).map(([l,v])=>({label:l,p:v/tot})).sort((a,b)=>b.p-a.p);
+  return {pred:(ranked[0]||{label:ORDER[0]}).label, ranked};
+}
+function alUncertainty(x,mem){ const r=classifyWith(x,mem,K).ranked; const p1=r[0]?r[0].p:0,p2=r[1]?r[1].p:0; return 1-(p1-p2); }
+function alProtos(){ return ORDER.map(m=>({...MIN[m].truth,label:m})); }
+function alNoisy(m){
+  const v={...MIN[m].truth};
+  if((m==='pyroxene'||m==='olivine') && Math.random()<0.6) v.cleavage=1;                               // the hard pyx/oliv boundary
+  if(m==='plagioclase' && Math.random()<0.5) v.twinning=0;
+  if(!v.opacity && Math.random()<0.5) v.relief=Math.max(0,Math.min(2,v.relief+(Math.random()<.5?-1:1)));
+  if(!v.opacity && Math.random()<0.4) v.biref=Math.max(0,Math.min(2,v.biref+(Math.random()<.5?-1:1)));
+  return v;
+}
+function alEasy(m){ return {mineral:m, seed:(Math.random()*1e9)>>>0, x:{...MIN[m].truth}}; }            // clean, redundant
+function alHard(m){
+  const v={...MIN[m].truth};
+  if(m==='pyroxene') v.cleavage=1;            // only one cleavage caught — still always pyroxene
+  else if(m==='olivine') v.biref=1;           // duller olivine — still always olivine
+  else if(m==='plagioclase') v.relief=1;      // slightly raised relief
+  return {mineral:m, seed:(Math.random()*1e9)>>>0, x:v};
+}
+function alSpec(m){ return alHard(m); }
+let AL_TEST=[], ACT=null, RND=null, alRunning=false;
+function alTestAcc(mem){ let c=0; AL_TEST.forEach(t=>{ if(classifyWith(t.x,mem,K).pred===t.mineral)c++; }); return c/(AL_TEST.length||1); }
+function alInit(){
+  alRunning=false;
+  AL_TEST=[]; for(let i=0;i<40;i++) AL_TEST.push(alEasy(ORDER[i%4]));     // test across all four minerals
+  const pool=[]; for(let c=0;c<4;c++) for(let i=0;i<10;i++) pool.push(alEasy(ORDER[c]));   // 10 of each
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  // seed knows only TWO minerals — it must DISCOVER pyroxene & olivine
+  const seed=[{...MIN.plagioclase.truth,label:'plagioclase'},{...MIN.ilmenite.truth,label:'ilmenite'}];
+  ACT={mem:seed.map(o=>({...o})), pool:pool.map(o=>({...o,x:{...o.x}})), curve:[]};
+  RND={mem:seed.map(o=>({...o})), pool:pool.map(o=>({...o,x:{...o.x}})), curve:[]};
+  ACT.curve.push(alTestAcc(ACT.mem)); RND.curve.push(alTestAcc(RND.mem));
+  renderAL();
+}
+function alActivePick(){ let best=-1,bi=0; ACT.pool.forEach((g,i)=>{const u=alUncertainty(g.x,ACT.mem); if(u>best){best=u;bi=i;}}); return bi; }
+function alStep(manualLabel){
+  if(ACT.pool.length){ const bi=alActivePick(); const q=ACT.pool.splice(bi,1)[0];
+    ACT.mem.push({...q.x,label:manualLabel||q.mineral}); ACT.curve.push(alTestAcc(ACT.mem)); }
+  if(RND.pool.length){ const ri=Math.floor(Math.random()*RND.pool.length); const q=RND.pool.splice(ri,1)[0];
+    RND.mem.push({...q.x,label:q.mineral}); RND.curve.push(alTestAcc(RND.mem)); }
+  renderAL();
+}
+function alChart(){
+  const W=520,H=230,L=42,B=22,T=10,R=12;
+  const n=Math.max(ACT.curve.length,RND.curve.length,2), xmax=(n-1)||1;
+  const X=i=>L+(W-L-R)*(i/xmax), Y=v=>T+(H-T-B)*(1-v);
+  const line=(c,col)=>c.length?`<path d="${c.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="2"/>`:'';
+  const grid=[0,0.5,1].map(v=>`<line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${W-R}" y2="${Y(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${(Y(v)+3).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--faint)" font-family="var(--mono)">${v*100|0}%</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%">${grid}
+    ${line(RND.curve,'#8b8b9e')}${line(ACT.curve,'#e0b341')}
+    <text x="${W-R}" y="${H-4}" text-anchor="end" font-size="10" fill="var(--faint)" font-family="var(--mono)">labels →</text>
+    <g font-size="11" font-family="var(--mono)">
+      <rect x="${L+4}" y="${T+1}" width="12" height="3" fill="#e0b341"/><text x="${L+20}" y="${T+7}" fill="var(--regolith)">active</text>
+      <rect x="${L+78}" y="${T+1}" width="12" height="3" fill="#8b8b9e"/><text x="${L+94}" y="${T+7}" fill="var(--muted)">random</text>
+    </g></svg>`;
+}
+function renderAL(){
+  if(!document.getElementById('alchart'))return;
+  alStopScopeReplay();                                  // cancel any prior uploaded-grain replay
+  document.getElementById('alchart').innerHTML=alChart();
+  document.getElementById('allabels').textContent=ACT.mem.length-4;
+  document.getElementById('alacc').textContent=Math.round(100*ACT.curve[ACT.curve.length-1])+'%';
+  document.getElementById('alrndacc').textContent=Math.round(100*RND.curve[RND.curve.length-1])+'%';
+  if(ACT.pool.length){
+    const bi=alActivePick(); const q=ACT.pool[bi];
+    const scope=document.getElementById('alscope');
+    if(q.uploaded){
+      // live <img> so a GIF can be replay-looped when the byte-patch is unavailable
+      scope.innerHTML='';
+      const im=document.createElement('img'); im.alt='your grain'; im.style.cssText='width:100%;display:block';
+      scope.appendChild(im);
+      if(q.isGif && q.needReplay){
+        im.src=q.loopSrc;
+        _alScopeReplay=setInterval(()=>{ if(!im.isConnected){alStopScopeReplay();return;}
+          im.src=q.loopSrc+(q.loopSrc.indexOf('?')<0?'?':'&')+'r='+Date.now(); }, 2600);
+      } else { im.src=q.loopSrc; }    // patched blob (or still image) loops on its own
+    } else {
+      scope.innerHTML=realImgTag(q.mineral);
+    }
+    const u=alUncertainty(q.x,ACT.mem); const out=classifyWith(q.x,ACT.mem,K);
+    document.getElementById('alquery').innerHTML=`
+      <div class="conf-row" style="grid-template-columns:110px 1fr 46px"><span class="stat-cap">uncertainty</span>
+        <div class="bar"><i style="width:${(u*100).toFixed(0)}%;background:var(--biref-magenta)"></i></div>
+        <span style="text-align:right">${(u*100).toFixed(0)}%</span></div>
+      <p class="hint" style="margin-top:6px">${q.uploaded?'<b style="color:var(--biref-blue)">Your uploaded grain.</b> ':''}It leans <b style="color:${LBLCOLOR[out.pred]}">${MIN[out.pred].name}</b> but isn't confident. ${ACT.pool.length} grains left in the pool.</p>`;
+    document.getElementById('aloracle').innerHTML=ORDER.map(m=>`<button data-l="${m}">${MIN[m].name}</button>`).join('');
+    document.querySelectorAll('#aloracle button').forEach(b=>b.addEventListener('click',()=>alStep(b.dataset.l)));
+    document.getElementById('alstep').disabled=false; document.getElementById('alrun').disabled=false;
+  } else {
+    alStopScopeReplay();
+    document.getElementById('alscope').innerHTML='';
+    document.getElementById('alquery').innerHTML='<p class="hint" style="color:var(--biref-green)">Pool exhausted. Compare the curves: active learning typically reaches high accuracy with noticeably fewer labels by spending them on the boundary cases.</p>';
+    document.getElementById('aloracle').innerHTML='';
+    document.getElementById('alstep').disabled=true; document.getElementById('alrun').disabled=true;
+  }
+}
+document.getElementById('alstep').addEventListener('click',()=>alStep());
+document.getElementById('alreset').addEventListener('click',()=>{ hideAlFeatures(); alInit(); });
+document.getElementById('alrun').addEventListener('click',()=>{
+  if(alRunning)return; alRunning=true; let n=0;
+  const iv=setInterval(()=>{ if(!ACT.pool.length||n>=20){clearInterval(iv);alRunning=false;return;} alStep(); n++; },170);
+});
+
+/* ── Station 04: add YOUR OWN image/GIF as a grain in the pool ───────────
+   You set its optical features and its true mineral (you are the answer key
+   here). It enters the active pool; because it's unfamiliar it usually has
+   high uncertainty, so the active learner tends to surface it for labeling. */
+let alUploadCounter=0, alPending=null;
+function hideAlFeatures(){ const w=document.getElementById('alfeatwrap'); if(w) w.style.display='none'; alPending=null; }
+document.getElementById('aluploadbtn').addEventListener('click',()=>document.getElementById('alupload').click());
+document.getElementById('alupload').addEventListener('change',(e)=>{
+  const file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  if(!/^image\//.test(file.type) && !/\.gif$/i.test(file.name)){
+    document.getElementById('alquery').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Please choose an image file (.gif, .png, .jpg, .webp…).</p>';
+    e.target.value=''; return;
+  }
+  const url=URL.createObjectURL(file);
+  const isGif=/gif$/i.test(file.type) || /\.gif$/i.test(file.name);
+  const id='U-'+String(++alUploadCounter).padStart(2,'0');
+  // build the live <img> preview for the scope; loop GIFs forever (patch or replay fallback)
+  const imgEl=document.createElement('img'); imgEl.alt='your uploaded grain'; imgEl.style.cssText='width:100%;display:block';
+  const holder=document.getElementById('alscope'); holder.innerHTML=''; holder.appendChild(imgEl);
+  // alPending records how to loop this grain once it's pooled:
+  //   loopSrc   : the src to display (infinite-loop blob when patched, else raw url)
+  //   needReplay: true when the byte-patch failed and a timed replay is required
+  alPending={id, x:{relief:null,biref:null,cleavage:null,twinning:null,opacity:null}, label:null,
+             isGif, url, loopSrc:url, needReplay:false, imgHTML:`<img src="${url}" alt="your grain" style="width:100%;display:block">`};
+  if(isGif){
+    const pendingRef=alPending;                          // capture; may be superseded before resolve
+    const applyReplay=()=>{ if(alPending===pendingRef){ pendingRef.needReplay=true; pendingRef.loopSrc=url; }
+                            if(imgEl.isConnected) alStartPreviewReplay(imgEl, url); };
+    forceGifLoopSrc(url).then(res=>{
+      if(res && res.patched){
+        if(alPending===pendingRef){ pendingRef.loopSrc=res.url; pendingRef.needReplay=false;
+          pendingRef.imgHTML=`<img src="${res.url}" alt="your grain" style="width:100%;display:block">`; }
+        if(imgEl.isConnected) imgEl.src=res.url;
+      } else { applyReplay(); }
+    }).catch(applyReplay);
+  } else { imgEl.src=url; }
+  // reveal feature + label controls
+  const wrap=document.getElementById('alfeatwrap'); wrap.style.display='block';
+  renderFeatureControls(document.getElementById('alfeatures'), alPending.x, null);
+  const lseg=document.getElementById('allabelseg');
+  lseg.innerHTML=ORDER.map(m=>`<button data-l="${m}">${MIN[m].name}</button>`).join('');
+  lseg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    alPending.label=b.dataset.l; lseg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  }));
+  document.getElementById('alquery').innerHTML=`<p class="hint"><b style="color:var(--biref-blue)">${id}</b> loaded. Set its optical properties and true mineral below, then “Add grain to pool”.</p>`;
+  e.target.value='';
+});
+document.getElementById('aladdupload').addEventListener('click',()=>{
+  if(!alPending) return;
+  if(!featuresComplete(alPending.x)){ document.getElementById('alquery').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Set every optical property for your grain first.</p>'; return; }
+  if(!alPending.label){ document.getElementById('alquery').innerHTML='<p class="hint" style="color:var(--biref-magenta)">Pick the true mineral for your grain (its answer-key label).</p>'; return; }
+  // carry the loop info onto the pooled grain so renderAL can display it forever
+  const grain={mineral:alPending.label, uploaded:true, id:alPending.id, x:{...alPending.x},
+               isGif:alPending.isGif, loopSrc:alPending.loopSrc, needReplay:alPending.needReplay,
+               imgHTML:`<img src="${alPending.loopSrc}" alt="your grain" style="width:100%;display:block">`};
+  ACT.pool.push(grain);
+  RND.pool.push({mineral:alPending.label, x:{...alPending.x}});   // keep both pools symmetric
+  hideAlFeatures();
+  renderAL();
+});
+
+/* Replay helpers for Station 04 uploaded GIFs when the byte-patch is unavailable
+   (file://). Each keeps one interval; starting a new one clears the previous. */
+let _alPreviewReplay=null, _alScopeReplay=null;
+function alStartPreviewReplay(img, baseSrc){
+  if(_alPreviewReplay) clearInterval(_alPreviewReplay);
+  img.src=baseSrc;
+  _alPreviewReplay=setInterval(()=>{ if(!img.isConnected){clearInterval(_alPreviewReplay);_alPreviewReplay=null;return;}
+    img.src=baseSrc+(baseSrc.indexOf('?')<0?'?':'&')+'r='+Date.now(); }, 2600);
+}
+function alStopScopeReplay(){ if(_alScopeReplay){ clearInterval(_alScopeReplay); _alScopeReplay=null; } }
+alInit();
+</script>
+</body>
+</html>

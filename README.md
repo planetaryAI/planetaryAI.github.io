@@ -19,3 +19,4 @@
 16. <strong>Lunar Thin Sections(1)</strong>: 6/13/2026
 17. <strong>Lunar Thin Sections(2)</strong>: 6/20/2026
 18. <strong>Lunar Thin Sections(3)</strong>: 6/27/2026
+19. <strong>Rules-based Grain Segmentation in Lunar Thin Sections</strong>: 7/3/2026

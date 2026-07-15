@@ -21,4 +21,5 @@
 18. <strong>Lunar Thin Sections(3)</strong>: 6/27/2026
 19. <strong>Rules-based Grain Segmentation in Lunar Thin Sections</strong>: 7/3/2026
 20. <strong>Reinforcement Learning for Phase Segmentation</strong>: 7/11/2026
-21. <strong>Experimental Petrology: A Laboratory-based Method for Studying Processes in Planetary Interiors and Understanding their Expressions in the Rock Record by Dr. Nick Dygert</strong>: 7/29/2026
+21. <strong>Extracting lunar olivine oxide table data</strong>: 7/18/2026
+22. <strong>Experimental Petrology: A Laboratory-based Method for Studying Processes in Planetary Interiors and Understanding their Expressions in the Rock Record by Dr. Nick Dygert</strong>: 7/29/2026

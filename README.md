@@ -25,3 +25,4 @@
 22. <strong>Chemistry Basics for Reading Lunar Rocks</strong>: 7/25/2026
 23. <strong>Experimental Petrology: A Laboratory-based Method for Studying Processes in Planetary Interiors and Understanding their Expressions in the Rock Record by Dr. Nick Dygert</strong>: 7/29/2026
 24. <strong>Apollo Lunar Samples</strong>: 8/1/2026
+25. <strong>Building NanoChat End to End on a Single H100</strong>: 8/8/2026

@@ -27,4 +27,4 @@
 24. <strong>Reading the Moon: An Open Education and Research Platform<strong>: 7/31/2026
 25. <strong>Apollo Lunar Samples</strong>: 8/1/2026
 26. <strong>Building NanoChat End to End on a Single H100</strong>: 8/8/2026
-27. <strong>Reading the Moon: Using AI for Lunar Science and Building AI from Lunar Data</strong>: 8/13/2026
+27. <strong>Reading the Moon: Using AI for Lunar Science and Building AI from Lunar Data</strong>: 8/19/2026

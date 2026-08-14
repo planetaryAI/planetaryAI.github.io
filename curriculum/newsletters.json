@@ -1,22 +1,7 @@
 [
-  {
-    "title": "An AI Literacy Curriculum Framework",
-    "file": "pdfs/framework.pdf"
-  },
-  {
-    "title": "LLM APIs",
-    "file": "pdfs/api.pdf"
-  },
-  {
-    "title": "Lunar Petrography",
-    "file": "pdfs/petrography.pdf"
-  },
+
   {
     "title": "Segmenting Minerals in Rotational Lunar Thin Section Images",
     "file": "pdfs/seg.pdf"
   },
-  {
-    "title": "Chemistry Basics for Reading Lunar Rocks",
-    "file": "pdfs/chemistry.pdf"
-  }
 ]

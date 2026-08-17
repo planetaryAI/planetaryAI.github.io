@@ -29,4 +29,4 @@
 26. <strong>Building NanoChat End to End on a Single H100</strong>: 8/8/2026
 27. <strong>Building SampleGPT from scratch using lunar sample text</strong>: 8/15/2026
 28. <strong>Reading the Moon: Using AI for Lunar Science and Building AI from Lunar Data</strong>: 8/19/2026
-29. <strong>Tokenization & position embeddings</strong>: 8/22/2026
+29. <strong>Attention is all you need</strong>: 8/22/2026

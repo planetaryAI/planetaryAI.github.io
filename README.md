@@ -30,3 +30,4 @@
 27. <strong>Building SampleGPT from scratch using lunar sample text</strong>: 8/15/2026
 28. <strong>Reading the Moon: Using AI for Lunar Science and Building AI from Lunar Data</strong>: 8/19/2026
 29. <strong>Attention is all you need</strong>: 8/22/2026
+30. <strong>Visualizing transformer layer</strong>: 8/29/2026

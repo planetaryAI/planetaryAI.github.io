@@ -6,5 +6,9 @@
   {
     "title": "Linear Algebra Basics",
     "file": "pdfs/linalg_pca.pdf"
+  },
+  {
+    "title": "A Numerical Example of Attention Mechanism in a Transformer",
+    "file": "pdfs/attention_numerical.pdf"
   }
 ]

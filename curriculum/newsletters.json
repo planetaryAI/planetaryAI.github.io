@@ -8,11 +8,11 @@
     "file": "pdfs/linalg_pca.pdf"
   },
   {
-    "title": "A Numerical Example of Attention Mechanism in a Transformer",
-    "file": "pdfs/attention_numerical.pdf"
-  },
-  {
     "title": "Chemistry Basics for Reading Lunar Rocks",
     "file": "pdfs/chemistry.pdf"
+  },
+  {
+    "title": "A Numerical Example of Attention Mechanism in a Transformer",
+    "file": "pdfs/attention_numerical.pdf"
   }
 ]

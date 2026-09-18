@@ -12,6 +12,10 @@
     "file": "pdfs/chemistry.pdf"
   },
   {
+    "title": "Representation Learning with the Iris Dataset",
+    "file": "pdfs/iris.pdf"
+  },
+  {
     "title": "A Numerical Example of Attention Mechanism in a Transformer",
     "file": "pdfs/attention_numerical.pdf"
   }

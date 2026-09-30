@@ -33,3 +33,6 @@
 30. <strong>Visualizing transformer layer</strong>: 8/29/2026
 31. <strong>Visualizing transformer layer (2)</strong>: 9/5/2026
 32. <strong>CO2 diffusion in bread dough</strong>: 9/12/2026
+33. <strong></strong>: Knowledge graph of lunar volatile loss: 9/19/2026
+34. <strong></strong>: Lunar olivine oxide data; Tippe Top and Cubli (1): 9/26/2026
+35. 
